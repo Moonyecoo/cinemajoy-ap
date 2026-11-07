@@ -19,3 +19,4 @@
 如果您发现可能影响用户设备安全或网络自治规范的漏洞，请勿公开提交 Issue。请通过安全邮箱与团队联系：
 - 安全对接邮箱：`security@cinemajoy.app` (或在 GitHub 仓库通过私密安全建议 Private Vulnerability Reporting 提交)
 - 我们将在 48 小时内确认漏洞，并在核准后于 5 个工作日内发布修复补丁。
+

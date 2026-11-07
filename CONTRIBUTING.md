@@ -33,3 +33,4 @@ npm start
   - `fix: prevent pin moment modal propagation leak`
   - `docs: update architecture overview in readme`
 - **精准补丁**：避免格式化非相关文件，保持 diff 纯净紧凑。
+
