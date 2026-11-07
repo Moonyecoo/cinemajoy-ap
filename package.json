@@ -1,0 +1,68 @@
+{
+  "name": "cinemajoy-app",
+  "version": "2.4.0",
+  "description": "影悦 · 独立版 —— 自主原创界面的极简影视客户端",
+  "main": "main.js",
+  "scripts": {
+    "start": "./scripts/start.sh",
+    "test": "node scripts/audit-domains.js && node test/test_dns.js && node test/test_quality.js && node test/test_metadata.js && node test/test_sources.js && node test/perf_budget.js && node test/deep_verification.js && node test/test_user_fixes.js",
+    "smoke": "KKY_SMOKE=1 ./scripts/start.sh",
+    "pack": "./scripts/pack.sh",
+    "pack:win": "electron-builder --win --x64",
+    "dmg": "./scripts/make-dmg.sh",
+    "make-icon": "./scripts/make-icon.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "hls.js": "^1.5.17"
+  },
+  "productName": "影悦",
+  "private": true,
+  "build": {
+    "appId": "com.cinemajoy.app",
+    "productName": "影悦",
+    "asar": false,
+    "directories": {
+      "output": "dist/win"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json",
+      "lib/**/*",
+      "src/**/*",
+      "data/**/*",
+      "assets/**/*",
+      "!**/.cache/**",
+      "!**/.DS_Store"
+    ],
+    "win": {
+      "executableName": "cinemajoy",
+      "icon": "assets/icon-1024.png",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "影悦",
+      "artifactName": "cinemajoy-setup-${version}.${ext}",
+      "unicode": true
+    },
+    "portable": {
+      "artifactName": "cinemajoy-${version}-portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.18.0"
+  }
+}

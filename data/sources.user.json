@@ -1,0 +1,222 @@
+{
+  "version": 10,
+  "sites": [
+    {
+      "key": "huya",
+      "name": "虎牙秒播",
+      "api": "https://www.huyaapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "2100kbps+ 1080P 高码率原画 · 极速专线直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "gs",
+      "name": "光速资源",
+      "api": "http://api.guangsuapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "2100kbps+ 蓝光原画 · 300ms极速直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "jy",
+      "name": "金鹰资源",
+      "api": "https://jyzyapi.com/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "2100kbps+ 院线高码率 · 极速直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "subo",
+      "name": "速播专线",
+      "api": "https://subocaiji.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "1950kbps+ 1080P高画质 · 双路并发直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "ff",
+      "name": "非凡资源",
+      "api": "http://cj.ffzyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "1850kbps+ 9.8万全网大库 · 骨干专线直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "js",
+      "name": "极速秒播",
+      "api": "https://jszyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "1620kbps+ 全网秒开极速切片 · 高清首发免VPN",
+      "builtin": true
+    },
+    {
+      "key": "ikun",
+      "name": "iKun资源",
+      "api": "https://ikunzyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "1600kbps+ 1080P高清影视与番剧 · 直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "hn",
+      "name": "红牛高清",
+      "api": "https://www.hongniuzy2.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "蓝光画质专区 · 稳定不卡直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "hh",
+      "name": "豪华资源",
+      "api": "https://hhzyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "院线同步上映 · 独家高清直连免VPN",
+      "builtin": true
+    },
+    {
+      "key": "bf",
+      "name": "暴风资源",
+      "api": "http://bfzyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "全网热门影视与电影解说专库 · 蓝光秒播",
+      "builtin": true
+    },
+    {
+      "key": "lz",
+      "name": "量子资源",
+      "api": "http://cj.lziapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "16.2万条大库 · 剧集与电影解说更新最全",
+      "builtin": true
+    },
+    {
+      "key": "sn",
+      "name": "索尼高清",
+      "api": "https://suoniapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "4K/1080P超清原画与影视解说 · CDN直连",
+      "builtin": true
+    },
+    {
+      "key": "sd",
+      "name": "闪电秒开",
+      "api": "https://sdzyapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "2400kbps+ 高码率节点 · 秒级缓冲直连",
+      "builtin": true
+    },
+    {
+      "key": "xl",
+      "name": "新浪专线",
+      "api": "http://api.xinlangapi.com/xinlangapi.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "老片经典剧场 · 高速稳定免VPN",
+      "builtin": true
+    },
+    {
+      "key": "md",
+      "name": "魔都动漫",
+      "api": "https://caiji.moduapi.cc/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "2000kbps+ 新番日更与高码率院线库",
+      "builtin": true
+    },
+    {
+      "key": "yy",
+      "name": "丫丫影视",
+      "api": "https://cj.yayazy.net/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "1900kbps+ 热剧与影视解说追更专线",
+      "builtin": true
+    },
+    {
+      "key": "yz",
+      "name": "优质资源",
+      "api": "http://api.1080zyku.com/inc/apijson.php",
+      "type": 1,
+      "enabled": true,
+      "note": "综合影视备用节点 · 极速专线免VPN",
+      "builtin": true
+    },
+    {
+      "key": "yh",
+      "name": "樱花动漫",
+      "api": "https://m3u8.apiyhzy.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "经典日漫国漫番剧专库",
+      "builtin": true
+    },
+    {
+      "key": "uk",
+      "name": "U酷影视",
+      "api": "https://api.ukuapi.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "热播榜单同步 · 高清画质",
+      "builtin": true
+    },
+    {
+      "key": "wj",
+      "name": "无尽专线",
+      "api": "https://api.wujinapi.me/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "无尽片库 · 欧美日韩影视收录",
+      "builtin": true
+    },
+    {
+      "key": "zy360",
+      "name": "360专线",
+      "api": "https://360zy.com/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "综合大库全面收录",
+      "builtin": true
+    },
+    {
+      "key": "sn2",
+      "name": "索尼备用",
+      "api": "https://suonizy.net/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "索尼独立冗余节点",
+      "builtin": true
+    },
+    {
+      "key": "taopian",
+      "name": "淘片专线",
+      "api": "https://taopianapi.com/cjapi/mc/vod/json.html",
+      "type": 1,
+      "enabled": true,
+      "note": "长尾稀缺经典片源",
+      "builtin": true
+    },
+    {
+      "key": "ff2",
+      "name": "非凡专线",
+      "api": "http://ffzy.tv/api.php/provide/vod/",
+      "type": 1,
+      "enabled": true,
+      "note": "非凡备用独立节点 · 双路并发容灾",
+      "builtin": true
+    }
+  ],
+  "removed": []
+}

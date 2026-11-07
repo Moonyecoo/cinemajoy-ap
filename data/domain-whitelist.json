@@ -1,0 +1,48 @@
+{
+  "description": "影悦 · 境内网络自治合规域名白名单 (保证国内直连免翻墙)",
+  "allowedDomains": [
+    "127.0.0.1",
+    "localhost",
+    "223.5.5.5",
+    "119.29.29.29",
+    "dns.alidns.com",
+    "doh.pub",
+    "movie.douban.com",
+    "m.douban.com",
+    "doubanio.com",
+    "img1.doubanio.com",
+    "img2.doubanio.com",
+    "img3.doubanio.com",
+    "img9.doubanio.com",
+    "fffgood.com",
+    "snzypic.vip",
+    "pic3.yzzyimg.online",
+    "ps.ryzypics.com",
+    "p.bfvp26.com",
+    "p.lztutu.com",
+    "api.1080zyku.com",
+    "www.huyaapi.com",
+    "image.huyajs.com",
+    "huyajs.com",
+    "cj.ffzyapi.com",
+    "cj.lziapi.com",
+    "bfzyapi.com",
+    "suoniapi.com",
+    "api.tmdb.org",
+    "image.tmdb.org",
+    "example.com",
+    "github.com",
+    "www.w3.org",
+    "schemas.xmlsoap.org",
+    "purl.org",
+    "aomedia.org"
+  ],
+  "forbiddenDomains": [
+    "huggingface.co",
+    "hf-mirror.com",
+    "googleapis.com",
+    "gstatic.com",
+    "raw.githubusercontent.com"
+  ]
+}
+

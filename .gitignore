@@ -1,0 +1,60 @@
+# ==========================================
+# 影悦 · 独立版 (CinemaJoy) .gitignore
+# ==========================================
+
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Production binaries & packaging outputs (Do not track large binaries on GitHub)
+dist/
+out/
+build/
+*.app/
+*.dmg
+*.zip
+*.tar.gz
+*.exe
+*.msi
+*.pkg
+release/
+
+# macOS system and index files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Runtime caches & temporary image caches
+data/poster_cache/
+.cache/
+*.cache
+
+# Runtime logs & profiling/dump test artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+probe-results.json
+test/*.png
+test/cards_dump.json
+test/img_stats.json
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local developer overrides & environments
+.env
+.env.local
+.env.*.local
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

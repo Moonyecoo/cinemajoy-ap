@@ -1,0 +1,1007 @@
+{
+  "site_a": {
+    "alpha": 49.999931223797304,
+    "beta": 0.0000014633234608344496,
+    "latencyEma": 122,
+    "lastTested": 1794038426568,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "site_b": {
+    "alpha": 0.000004389970382503347,
+    "beta": 49.99992829715038,
+    "latencyEma": 400,
+    "lastTested": 1794038426569,
+    "consecutiveFailures": 185,
+    "circuitBreakUntil": 1794038726569
+  },
+  "ry": {
+    "alpha": 17.526210687509206,
+    "beta": 2.9799372931055204,
+    "latencyEma": 1310,
+    "lastTested": 1793754528436
+  },
+  "ik": {
+    "alpha": 11.548553707872042,
+    "beta": 1.6178041576373428,
+    "latencyEma": 737,
+    "lastTested": 1793689756622
+  },
+  "jy": {
+    "alpha": 17.286931329868022,
+    "beta": 1.3763679550969252,
+    "latencyEma": 344,
+    "lastTested": 1794033244397,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "tp": {
+    "alpha": 4.8612,
+    "beta": 0.9603999999999999,
+    "latencyEma": 2507,
+    "lastTested": 1793689758395
+  },
+  "hn": {
+    "alpha": 19.864977284541133,
+    "beta": 0.6411706960735924,
+    "latencyEma": 387,
+    "lastTested": 1794033244214,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "hh": {
+    "alpha": 8.365408099391999,
+    "beta": 0.8858423808639998,
+    "latencyEma": 344,
+    "lastTested": 1794031349180,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "hupo": {
+    "alpha": 3.94,
+    "beta": 0.98,
+    "latencyEma": 431,
+    "lastTested": 1793689689748
+  },
+  "js": {
+    "alpha": 21.637157700391835,
+    "beta": 0.6034647297788965,
+    "latencyEma": 345,
+    "lastTested": 1794033244171,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "bf": {
+    "alpha": 33.22634453518737,
+    "beta": 0.35688628648537435,
+    "latencyEma": 385,
+    "lastTested": 1794031349364,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "yz": {
+    "alpha": 35.729594177010526,
+    "beta": 0.30362565580828615,
+    "latencyEma": 1017,
+    "lastTested": 1794031350698,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "ff": {
+    "alpha": 46.23853245031303,
+    "beta": 0.08003122446142442,
+    "latencyEma": 316,
+    "lastTested": 1794033244133,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "lz": {
+    "alpha": 23.30511973034719,
+    "beta": 0.5679761759500592,
+    "latencyEma": 461,
+    "lastTested": 1794031349454,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "dytt": {
+    "alpha": 6.64869648,
+    "beta": 0.9223681599999999,
+    "latencyEma": 503,
+    "lastTested": 1793754543934
+  },
+  "zy360": {
+    "alpha": 8.365408099391999,
+    "beta": 0.8858423808639998,
+    "latencyEma": 882,
+    "lastTested": 1794031350419,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "undefined": {
+    "alpha": 2.8811999999999998,
+    "beta": 2.9404,
+    "latencyEma": 400,
+    "lastTested": 1793757421882
+  },
+  "gs": {
+    "alpha": 33.275651047941736,
+    "beta": 2.7575687848770696,
+    "latencyEma": 489,
+    "lastTested": 1794033244270,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "hy": {
+    "alpha": 3.94,
+    "beta": 0.98,
+    "latencyEma": 407,
+    "lastTested": 1793757395855
+  },
+  "ff2": {
+    "alpha": 30.283986234016016,
+    "beta": 0.41948965459540316,
+    "latencyEma": 504,
+    "lastTested": 1794031349399,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "sn": {
+    "alpha": 10.28755096188261,
+    "beta": 3.6154797463165855,
+    "latencyEma": 511,
+    "lastTested": 1794031350311,
+    "consecutiveFailures": 2,
+    "circuitBreakUntil": 0
+  },
+  "xl": {
+    "alpha": 10.813855179882953,
+    "beta": 0.8337477621301497,
+    "latencyEma": 518,
+    "lastTested": 1794031349371,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "yh": {
+    "alpha": 3.7839759999999996,
+    "beta": 2.9211919999999996,
+    "latencyEma": 491,
+    "lastTested": 1794031354164,
+    "consecutiveFailures": 2
+  },
+  "md": {
+    "alpha": 7.5157225504,
+    "beta": 0.9039207967999998,
+    "latencyEma": 533,
+    "lastTested": 1794031350022,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "sd": {
+    "alpha": 3.7839759999999996,
+    "beta": 2.9211919999999996,
+    "latencyEma": 448,
+    "lastTested": 1794031352346,
+    "consecutiveFailures": 2
+  },
+  "uk": {
+    "alpha": 7.5157225504,
+    "beta": 0.9039207967999998,
+    "latencyEma": 575,
+    "lastTested": 1794031349847,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "wj": {
+    "alpha": 3.7839759999999996,
+    "beta": 2.9211919999999996,
+    "latencyEma": 369,
+    "lastTested": 1794031350701,
+    "consecutiveFailures": 2
+  },
+  "subo": {
+    "alpha": 16.661876989509636,
+    "beta": 0.7093217661806457,
+    "latencyEma": 247,
+    "lastTested": 1794033244079,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "yy": {
+    "alpha": 3.7839759999999996,
+    "beta": 2.9211919999999996,
+    "latencyEma": 420,
+    "lastTested": 1794031353016,
+    "consecutiveFailures": 2
+  },
+  "ikun": {
+    "alpha": 16.661876989509636,
+    "beta": 0.7093217661806457,
+    "latencyEma": 638,
+    "lastTested": 1794033244678,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "sn2": {
+    "alpha": 3.7839759999999996,
+    "beta": 2.9211919999999996,
+    "latencyEma": 488,
+    "lastTested": 1794031351259,
+    "consecutiveFailures": 2
+  },
+  "taopian": {
+    "alpha": 7.5157225504,
+    "beta": 0.9039207967999998,
+    "latencyEma": 635,
+    "lastTested": 1794031349771,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793874585861": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793874585863,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "good_site": {
+    "alpha": 45.30245999964311,
+    "beta": 0.09994765958206091,
+    "latencyEma": 152,
+    "lastTested": 1794038424791,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793874595056": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793874595058,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793874682101": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793874682103,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793874750148": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793874750149,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "huya": {
+    "alpha": 17.328639449719443,
+    "beta": 0.6951353308570327,
+    "latencyEma": 321,
+    "lastTested": 1794033244154,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793875510750": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793875510752,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793875667520": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793875667521,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793876213044": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793876213045,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793880598487": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793880598489,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793894416864": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793894416865,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793894674478": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793894674480,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793895337768": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793895337769,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "test_broken_site_1793895385315": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793895385316,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "probe_test_1": {
+    "alpha": 3,
+    "beta": 11.090379364488335,
+    "latencyEma": 400,
+    "lastTested": 1794038424817,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "probe_test_2": {
+    "alpha": 3,
+    "beta": 11.090379364488335,
+    "latencyEma": 400,
+    "lastTested": 1794038424817,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793895385350": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793895385909,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793895685909
+  },
+  "broken_site_b_1793895385350": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793895385909,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793895685909
+  },
+  "test_broken_site_1793895814552": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793895814553,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793895814577": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793895815142,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793896115142
+  },
+  "broken_site_b_1793895814577": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793895815142,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793896115142
+  },
+  "test_broken_site_1793896538734": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793896538735,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793896538757": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793896539327,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793896839327
+  },
+  "broken_site_b_1793896538757": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793896539327,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793896839327
+  },
+  "test_broken_site_1793897582379": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793897582380,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793897582404": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793897583007,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793897883007
+  },
+  "broken_site_b_1793897582404": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793897583007,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793897883007
+  },
+  "test_broken_site_1793897617626": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793897617627,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793897617649": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793897618250,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793897918250
+  },
+  "broken_site_b_1793897617649": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793897618251,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793897918251
+  },
+  "test_broken_site_1793898380240": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793898380241,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793898380263": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793898380873,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793898680873
+  },
+  "broken_site_b_1793898380263": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793898380873,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793898680873
+  },
+  "test_broken_site_1793899151604": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793899151606,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793899151627": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793899152207,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793899452207
+  },
+  "broken_site_b_1793899151627": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793899152208,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793899452208
+  },
+  "test_broken_site_1793899175942": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793899175943,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793899175965": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793899176570,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793899476570
+  },
+  "broken_site_b_1793899175965": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793899176570,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793899476570
+  },
+  "test_broken_site_1793925989909": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793925989911,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793925989933": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793925990553,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926290553
+  },
+  "broken_site_b_1793925989933": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793925990553,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926290553
+  },
+  "test_broken_site_1793926557010": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793926557011,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793926557034": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793926557608,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926857608
+  },
+  "broken_site_b_1793926557034": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793926557609,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926857609
+  },
+  "test_broken_site_1793926584173": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1793926584174,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1793926584196": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793926585195,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926885195
+  },
+  "broken_site_b_1793926584196": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1793926585195,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1793926885195
+  },
+  "test_broken_site_1794026349668": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794026349670,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794026349695": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794026350282,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794026650282
+  },
+  "broken_site_b_1794026349695": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794026350282,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794026650282
+  },
+  "test_broken_site_1794026419350": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794026419351,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794026419373": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794026419944,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794026719944
+  },
+  "broken_site_b_1794026419373": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794026419944,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794026719944
+  },
+  "test_broken_site_1794027423015": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794027423017,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794027423039": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794027423628,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794027723628
+  },
+  "broken_site_b_1794027423039": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794027423628,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794027723628
+  },
+  "test_broken_site_1794029111200": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794029111202,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794029111224": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029111784,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794029411784
+  },
+  "broken_site_b_1794029111224": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029111784,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794029411784
+  },
+  "test_broken_site_1794029606430": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794029606432,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794029606458": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029607067,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794029907067
+  },
+  "broken_site_b_1794029606458": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029607067,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794029907067
+  },
+  "test_broken_site_1794029715764": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794029715765,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794029715790": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029716390,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030016390
+  },
+  "broken_site_b_1794029715790": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794029716390,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030016390
+  },
+  "test_broken_site_1794030017952": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794030017954,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794030017984": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794030018585,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030318585
+  },
+  "broken_site_b_1794030017984": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794030018586,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030318586
+  },
+  "test_broken_site_1794030602847": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794030602849,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794030602872": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794030603429,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030903429
+  },
+  "broken_site_b_1794030602872": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794030603430,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794030903430
+  },
+  "test_broken_site_1794033158252": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794033158254,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794033158276": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794033158868,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794033458868
+  },
+  "broken_site_b_1794033158276": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794033158868,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794033458868
+  },
+  "test_broken_site_1794033264710": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794033264711,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794033264734": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794033265297,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794033565297
+  },
+  "broken_site_b_1794033264734": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794033265298,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794033565298
+  },
+  "test_broken_site_1794036858065": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794036858068,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794036858091": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036859118,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037159118
+  },
+  "broken_site_b_1794036858091": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036859118,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037159118
+  },
+  "test_broken_site_1794036919894": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794036919895,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794036919918": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036920499,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037220499
+  },
+  "broken_site_b_1794036919918": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036920500,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037220500
+  },
+  "test_broken_site_1794036961695": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794036961696,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794036961719": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036962281,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037262281
+  },
+  "broken_site_b_1794036961719": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794036962282,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037262282
+  },
+  "test_broken_site_1794037017934": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794037017935,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794037017956": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794037018708,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037318708
+  },
+  "broken_site_b_1794037017956": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794037018709,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794037318709
+  },
+  "test_broken_site_1794037713206": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794037713209,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794037713235": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794037713845,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794038013845
+  },
+  "broken_site_b_1794037713235": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794037713846,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794038013846
+  },
+  "test_broken_site_1794038424790": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794038424791,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794038424817": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794038425401,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794038725401
+  },
+  "broken_site_b_1794038424817": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794038425401,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794038725401
+  }
+}

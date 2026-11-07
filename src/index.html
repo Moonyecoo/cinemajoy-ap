@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' file: https: http: data: blob: kky-pic:; media-src 'self' file: https: http: blob:; connect-src 'self' https: http: kky-pic:; style-src 'self' 'unsafe-inline' kky-pic:; script-src 'self';" />
+<title>影悦</title>
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+
+  <!-- 自绘标题栏：给红绿灯让位，同时作为拖拽区 -->
+  <div class="titlebar" id="titlebar">
+    <div class="titlebar-side"></div>
+    <div class="titlebar-main">
+      <div class="titlebar-title" id="windowTitle"></div>
+      <div class="titlebar-actions">
+        <button class="tb-btn" id="btnBack" title="后退 (⌘[)" aria-label="后退">
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none"><path d="M7.2 1.2 1.6 7l5.6 5.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 侧栏 (Cinema. Modern Light-Airy Sidebar) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-icon" width="30" height="30" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <radialGradient id="brandOrb" cx="30%" cy="25%" r="75%">
+            <stop offset="0%" stop-color="#93C5FD"/>
+            <stop offset="45%" stop-color="#C084FC"/>
+            <stop offset="80%" stop-color="#FF4D79"/>
+            <stop offset="100%" stop-color="#FB7185"/>
+          </radialGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#brandOrb)"/>
+        <polygon points="13,10.5 22,16 13,21.5" fill="#ffffff"/>
+      </svg>
+      <div class="brand-title-wrap">
+        <span class="brand-mark">影悦<span class="brand-dot">.</span></span>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group-title">MENU</div>
+      <a class="nav-item" data-route="home">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="2"/>
+          <rect x="14" y="14" width="7" height="7" rx="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="2"/>
+        </svg>
+        <span>主页</span>
+      </a>
+      <a class="nav-item" data-route="circles" data-legacy-route="rank" title="影视圈与热播榜单">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="12" cy="12" r="3.5"/>
+          <path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>
+        </svg>
+        <span>影视圈</span>
+        <span class="nav-badge" id="navCircleBadge">HOT</span>
+        <!-- data-route="rank" 热播榜已重构升级为主题影视圈广场 -->
+      </a>
+      <a class="nav-item" data-route="cat" data-cat="4k" title="最新上映电影深度推荐与热度风向标">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <line x1="8" y1="7" x2="16" y2="7"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <span>新片专栏</span>
+      </a>
+
+      <div class="nav-group-title">LIBRARY · 片库</div>
+      <div id="navCategories"></div>
+
+      <div class="nav-group-title">我的与源</div>
+      <a class="nav-item" data-route="history">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <polyline points="12 7 12 12 15 15"/>
+        </svg>
+        <span>观看记录</span>
+      </a>
+      <a class="nav-item" data-route="favorites">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        <span>喜欢与待播</span>
+      </a>
+      <a class="nav-item" data-route="downloads">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>本地文件</span>
+      </a>
+      <a class="nav-item" data-route="settings">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 17 12 14 20 10 4 7 12 2 12"/>
+        </svg>
+        <span>片源测速</span>
+        <span class="nav-badge" id="navSourceBadge">9</span>
+      </a>
+      <a class="nav-item" data-route="profile">
+        <svg class="nav-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>个人中心</span>
+      </a>
+    </nav>
+
+    <!-- 侧栏底部皇冠新片专栏探索卡片 (参考图左下角渐变卡) -->
+    <div class="sidebar-promo-card" id="sidebarPromoCard">
+      <div class="promo-crown-badge" aria-hidden="true">👑</div>
+      <div class="promo-card-text">探索新片热度专栏<br/>与高光时刻社区</div>
+      <button class="promo-card-btn" id="btnSidebarExplore">立即探索</button>
+    </div>
+  </aside>
+
+  <!-- 顶栏 (Cinema. Modern Greeting + Pill Search + User Card) -->
+  <header class="topbar">
+    <button class="topbar-back-btn disabled" id="btnTopbarBack">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>返回</span>
+    </button>
+    <div class="topbar-greeting" id="topbarGreeting">
+      <span class="greeting-hello">Hello</span>
+      <strong class="greeting-name" id="topbarGreetingName">影悦浪客!</strong>
+      <span class="greeting-emoji">😊</span>
+    </div>
+    <div class="search" id="searchBox">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+        <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input id="searchInput" type="text" placeholder="搜索电影、新片专栏、影视圈…" autocomplete="off" spellcheck="false" />
+      <kbd class="search-kbd">⌘F</kbd>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-icon-btn" id="btnRefresh" title="刷新当前页面">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+      </button>
+      <button class="topbar-icon-btn" id="btnSourceSwitch" title="切换片源与测速">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <button class="topbar-user-pill" data-act="nav" data-route="profile" title="进入个人中心">
+        <span class="topbar-avatar-face" id="topbarAvatarFace">✦</span>
+        <span class="topbar-user-meta">
+          <strong id="topbarUserName">影悦浪客</strong>
+          <small>Watcher · 影迷</small>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 内容区 -->
+  <main id="view" class="view"></main>
+
+  <!-- 播放器浮层（独立于路由，切页即销毁） -->
+  <div id="playerLayer" class="player-layer" hidden></div>
+
+  <!-- 源切换浮层 -->
+  <div id="sourcePopover" class="popover" hidden></div>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="vendor/hls.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
