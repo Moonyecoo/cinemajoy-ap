@@ -1730,149 +1730,100 @@ function streamCardHTML(item) {
   const overview = item.overview || item.summary || item.script_summary || '全网同步实时院线上映，高画质原片与影迷精彩解说已就绪。'
 
   let typeClass = 'trending'
-  let typeLabel = '🔴 TMDB 实时热映'
+  let typeLabel = '🔴 TMDB 实时'
   if (isReel) {
     typeClass = 'reel'
-    typeLabel = `✦ 定格此刻 · ${item.reelClips ? item.reelClips.length : 3} 段连播`
+    typeLabel = `✦ 定格此刻 · ${item.reelClips ? item.reelClips.length : 3}段连播`
   } else if (isCommentary) {
     typeClass = 'commentary'
-    typeLabel = '🎬 实时电影解说'
+    typeLabel = '🎬 电影解说'
   } else if (isArticle) {
     typeClass = 'article'
-    typeLabel = '📖 深度视听导读'
+    typeLabel = '📖 深度视听'
   }
+
+  const primaryActionAttr = isReel
+    ? `data-play-user-reel="${esc(item.id)}"`
+    : isCommentary
+    ? `data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}"`
+    : isArticle
+    ? `data-read-article="${esc(item.id)}"`
+    : `data-stream-play="${esc(title)}"`
 
   return `
     <article class="stream-feed-card" data-stream-id="${esc(item.id || '')}" data-movie-title="${esc(title)}">
-      <div class="stream-card-meta-top">
-        <div class="stream-origin-group">
-          <span class="stream-type-pill ${typeClass}">${esc(typeLabel)}</span>
-          <span class="stream-date-pill">🗓️ ${esc(dateStr)}</span>
-          ${genres.slice(0, 3).map((g) => `<span class="stream-genre-pill">${esc(g)}</span>`).join('')}
-        </div>
-        <div class="stream-score-group">
-          ${score ? `<span class="stream-score-badge">★ ${esc(score)}</span>` : ''}
-          <span class="stream-source-badge">${isReel ? '影悦定格合成' : isCommentary ? '全网解说' : 'TMDB 官方直连'}</span>
-        </div>
-      </div>
-
-      <div class="stream-media-frame">
+      <div class="stream-media-frame" ${primaryActionAttr}>
         <div class="stream-backdrop-wrap">
           <img class="stream-backdrop-img" src="${esc(backdrop)}" data-pending-title="${esc(title)}" alt="${esc(title)}" loading="lazy" decoding="async" />
-          <div class="stream-backdrop-scrim"></div>
         </div>
-        <div class="stream-poster-wrap">
-          <img class="stream-poster-img" src="${esc(poster)}" data-pending-title="${esc(title)}" alt="${esc(title)}" loading="lazy" decoding="async" />
-        </div>
-        <div class="stream-media-actions">
-          ${
-            isReel
-              ? `
-            <button class="stream-media-play-btn" data-play-user-reel="${esc(item.id)}" title="连播《${esc(title)}》合成电影解说">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-              <span>连播解说</span>
-            </button>
-          `
-              : isCommentary
-              ? `
-            <button class="stream-media-play-btn" data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}" title="播放《${esc(title)}》解说视频">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-              <span>播放解说</span>
-            </button>
-          `
-              : isArticle
-              ? `
-            <button class="stream-media-play-btn" data-read-article="${esc(item.id)}" title="阅读深度全文">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              <span>深度导读</span>
-            </button>
-          `
-              : `
-            <button class="stream-media-play-btn" data-stream-play="${esc(title)}" title="立即全网并发匹配播放《${esc(title)}》">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
-              <span>立即播放</span>
-            </button>
-          `
-          }
+        <span class="stream-media-badge-top ${typeClass}">${esc(typeLabel)}</span>
+        <span class="stream-media-badge-bottom">${isReel ? `${item.totalDuration || 24}s 连播` : (score ? `★ ${score}` : '1080P')}</span>
+        <div class="stream-media-hover-overlay">
+          <div class="stream-play-circle-btn" title="立即播放《${esc(title)}》">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+          </div>
         </div>
       </div>
 
       <div class="stream-card-body">
-        <div class="stream-title-row">
-          <h2 class="stream-title">《${esc(title)}》${origTitle && origTitle !== title ? `<span class="stream-sub-title">${esc(origTitle)}</span>` : ''}</h2>
+        <div class="stream-poster-chip" title="《${esc(title)}》海报" data-stream-play="${esc(title)}">
+          <img src="${esc(poster)}" data-pending-title="${esc(title)}" alt="${esc(title)}" loading="lazy" decoding="async" />
         </div>
-        <p class="stream-overview">${esc(overview)}</p>
-
-        ${
-          isReel && Array.isArray(item.reelClips)
-            ? `
-          <div class="stream-reel-timeline-box">
-            <div class="stream-reel-timeline-head">
-              <span>✦ 定格此刻 · ${item.reelClips.length} 段高光解说时间轴 (创作者: ${esc(item.author_name || '影悦影迷')})</span>
-              <span class="stream-reel-duration">总长 ${item.totalDuration || 24} 秒</span>
-            </div>
-            <div class="stream-reel-clips-list">
-              ${item.reelClips
-                .map(
-                  (c, i) => `
-                <div class="stream-reel-clip-badge">
-                  <span class="clip-step">#${i + 1}</span>
-                  <span class="clip-time">${esc(c.clip_range_label || '')}</span>
-                  <span class="clip-note">${esc(c.quote_or_note || '')}</span>
-                </div>
-              `
-                )
-                .join('')}
-            </div>
+        <div class="stream-info-col">
+          <h3 class="stream-title" title="${esc(title)}" data-stream-play="${esc(title)}">《${esc(title)}》${origTitle && origTitle !== title ? ` <span class="stream-sub-title">${esc(origTitle)}</span>` : ''}</h3>
+          <div class="stream-channel-line">
+            <span>${isReel ? `✦ 创作者: ${esc(item.author_name || '影悦影迷')}` : isCommentary ? `🎬 ${esc(item.siteName || '全网解说')}` : isArticle ? `📖 影悦深度专栏` : 'TMDB 全球院线直连'}</span>
           </div>
-        `
-            : ''
-        }
-
-        <div class="stream-action-bar">
-          ${
-            isReel
-              ? `
-            <button class="btn-capsule appstore-get stream-btn-play" data-play-user-reel="${esc(item.id)}">
-              ▶ 连播合成解说 (${item.reelClips ? item.reelClips.length : 3}段)
+          <div class="stream-stats-line">
+            <span>${isReel ? `${item.reelClips ? item.reelClips.length : 3}段合成` : (genres && genres.length ? genres.slice(0, 2).join(' · ') : '院线热映')}</span>
+            <span>•</span>
+            <span>${esc(dateStr)}</span>
+          </div>
+          <div class="stream-quick-actions">
+            ${
+              isReel
+                ? `
+              <button class="stream-quick-btn primary" data-play-user-reel="${esc(item.id)}" title="连播合成解说">
+                ▶ 连播
+              </button>
+              <button class="stream-quick-btn" data-stream-play="${esc(title)}" title="播放完整正片">
+                🎞️ 正片
+              </button>
+            `
+                : isCommentary
+                ? `
+              <button class="stream-quick-btn primary" data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}" title="播放电影解说">
+                ▶ 解说
+              </button>
+              <button class="stream-quick-btn" data-stream-play="${esc(title)}" title="播放完整正片">
+                🎞️ 正片
+              </button>
+            `
+                : isArticle
+                ? `
+              <button class="stream-quick-btn primary" data-read-article="${esc(item.id)}" title="阅读深度导读">
+                📖 导读
+              </button>
+              <button class="stream-quick-btn" data-stream-play="${esc(title)}" title="播放完整正片">
+                ▶ 播放
+              </button>
+            `
+                : `
+              <button class="stream-quick-btn primary" data-stream-play="${esc(title)}" title="立即匹配播放">
+                ▶ 播放
+              </button>
+            `
+            }
+            <button class="stream-quick-btn" data-stream-pin="${esc(title)}" title="为《${esc(title)}》截取 3-5 秒定格视频并添加解说">
+              ✦ 定格
             </button>
-            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
-              🎞️ 完整正片
+            <button class="stream-quick-btn stream-btn-circle" data-stream-circle="${esc(title)}" title="收入影视圈影单">
+              + 影单
             </button>
-          `
-              : isCommentary
-              ? `
-            <button class="btn-capsule appstore-get stream-btn-play" data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}">
-              ▶ 播放电影解说
+            <button class="stream-quick-btn" data-stream-share="${esc(title)}" data-stream-summary="${esc(overview)}" title="复制分享速递">
+              🔗
             </button>
-            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
-              🎞️ 完整正片
-            </button>
-          `
-              : isArticle
-              ? `
-            <button class="btn-capsule appstore-get stream-btn-play" data-read-article="${esc(item.id)}">
-              📖 阅读深度导读
-            </button>
-            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
-              ▶ 立即播放正片
-            </button>
-          `
-              : `
-            <button class="btn-capsule appstore-get stream-btn-play" data-stream-play="${esc(title)}">
-              ▶ 立即匹配播放
-            </button>
-          `
-          }
-          <button class="btn-capsule stream-btn-pin" data-stream-pin="${esc(title)}" title="为《${esc(title)}》截取 3-5 秒定格视频并添加解说">
-            ✦ 定格此刻
-          </button>
-          <button class="btn-capsule stream-btn-circle" data-stream-circle="${esc(title)}" title="将《${esc(title)}》加入影视圈影单">
-            + 收入影视圈
-          </button>
-          <button class="btn-capsule stream-btn-share" data-stream-share="${esc(title)}" data-stream-summary="${esc(overview)}" title="复制分享文案">
-            🔗 分享速递
-          </button>
+          </div>
         </div>
       </div>
     </article>
@@ -1903,33 +1854,32 @@ async function renderMovieArticles(forceRefresh = false) {
   view.innerHTML = `
     <div class="stream-feed-wrapper">
       <div class="stream-header">
-        <div>
-          <div class="articles-kicker">LIVE TMDB DISCOVERY STREAM · 实时推送流</div>
-          <h1 class="page-title" style="margin:4px 0 6px 0">新片专栏 · 全球院线与影迷推送流</h1>
-          <p class="articles-sub">直连 themoviedb.org 官方实时海报与 2026 院线速递，汇聚「✦ 定格此刻」串播解说与全网精读流，单流下推，即点即播。</p>
+        <div class="stream-header-left">
+          <h1 class="stream-header-title">新片专栏</h1>
+          <span class="stream-header-sub">直连 TMDB 2026 院线速递 · 定格串播解说 · 即点即播</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
           <button class="btn-capsule small" id="btnRefreshStream" title="立即从 themoviedb.org 与全网直连源拉取最新院线流">
-            🔄 实时刷新
+            🔄 刷新
           </button>
           <div class="heat-radar-pill">
             <span class="heat-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></span>
-            <span id="streamSyncStatus">🟢 TMDB 全球院线实时直连 · 已同步 2026 院线海报</span>
+            <span id="streamSyncStatus">🟢 TMDB 全球院线实时直连</span>
           </div>
         </div>
       </div>
 
       <div class="stream-channel-bar" id="streamChannelBar">
-        <button class="stream-pill active" data-stream-tab="trending">🔥 院线热映流 (TMDB 实时)</button>
-        <button class="stream-pill" data-stream-tab="reels">✦ 影迷解说串播流</button>
-        <button class="stream-pill" data-stream-tab="commentary">🎬 实时解说速读流</button>
-        <button class="stream-pill" data-stream-tab="top_rated">⭐ 全球高分榜单流</button>
+        <button class="stream-pill active" data-stream-tab="trending">🔥 院线热映 (TMDB 实时)</button>
+        <button class="stream-pill" data-stream-tab="reels">✦ 影迷串播解说</button>
+        <button class="stream-pill" data-stream-tab="commentary">🎬 电影解说速递</button>
+        <button class="stream-pill" data-stream-tab="top_rated">⭐ 全球高分榜单</button>
         <button class="stream-pill" data-stream-tab="all">✦ 综合全景流</button>
       </div>
 
       <div class="stream-feed-container" id="streamFeedContainer">
-        ${Array.from({ length: 4 }, () => `
-          <div class="skeleton" style="height:480px;border-radius:26px;margin-bottom:12px"></div>
+        ${Array.from({ length: 8 }, () => `
+          <div class="skeleton" style="aspect-ratio:16/11;border-radius:12px"></div>
         `).join('')}
       </div>
 
@@ -2038,8 +1988,8 @@ async function renderMovieArticles(forceRefresh = false) {
     if (!feedContainer) return
 
     if (!append) {
-      feedContainer.innerHTML = Array.from({ length: 3 }, () => `
-        <div class="skeleton" style="height:480px;border-radius:26px;margin-bottom:12px"></div>
+      feedContainer.innerHTML = Array.from({ length: 8 }, () => `
+        <div class="skeleton" style="aspect-ratio:16/11;border-radius:12px"></div>
       `).join('')
     }
 
