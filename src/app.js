@@ -1292,14 +1292,40 @@ async function renderHome() {
     console.warn('[recommender]', e)
   }
 
-  // 精选高分电影作为首页宽幅横向超清巨幕海报 (Widescreen HD Billboard Hero)
-  const heroCandidates = dedupeItems(candidatePool).filter((x) => x.pic && !x.pic.includes('placeholder'))
-  heroCandidates.sort((a, b) => {
-    const aMovie = /电影|片/.test(a.typeName || '') ? 1.5 : 0
-    const bMovie = /电影|片/.test(b.typeName || '') ? 1.5 : 0
-    return ((parseFloat(b.score) || 0) + bMovie) - ((parseFloat(a.score) || 0) + aMovie)
-  })
-  const heroItems = heroCandidates.slice(0, 6)
+  // 精选官方 TMDB 1080P 宽幅横向超清宣传海报作为首页巨幕 (Widescreen HD Billboard Hero)
+  let heroItems = []
+  try {
+    const tmdbTrending = await shellApi.api.tmdbFeed({ category: 'trending', force: false })
+    if (Array.isArray(tmdbTrending) && tmdbTrending.length) {
+      heroItems = tmdbTrending
+        .filter((m) => m && m.backdrop && m.backdrop.includes('image.tmdb.org'))
+        .slice(0, 6)
+        .map((m) => ({
+          name: m.title,
+          originalName: m.original_title,
+          score: m.vote_average ? String(m.vote_average) : '9.2',
+          pic: m.poster,
+          picSlide: m.backdrop,
+          _hdBackdrop: m.backdrop,
+          typeName: (m.genres && m.genres[0]) || '院线巨幕',
+          area: '全球院线',
+          year: m.year || '2026',
+          remarks: '1080P 原画蓝光',
+          content: m.overview || `《${m.title}》· 16:9 横向超清宣传巨幕，免 VPN 高码率蓝光直连秒播。`,
+        }))
+    }
+  } catch {}
+
+  // 若离线或降级，从候选池中严格筛选具备高清横向剧照的高分影片
+  if (!heroItems.length) {
+    const heroCandidates = dedupeItems(candidatePool).filter((x) => x.pic && !x.pic.includes('placeholder'))
+    heroCandidates.sort((a, b) => {
+      const aMovie = /电影|片/.test(a.typeName || '') ? 1.5 : 0
+      const bMovie = /电影|片/.test(b.typeName || '') ? 1.5 : 0
+      return (parseFloat(b.score) || 0) + bMovie - ((parseFloat(a.score) || 0) + aMovie)
+    })
+    heroItems = heroCandidates.slice(0, 6)
+  }
 
   renderHero(heroItems)
   hydratePendingPosters(view)
@@ -1325,7 +1351,7 @@ function renderHero(items) {
         <div class="hero-billboard-content">
           <div class="hero-kicker-row">
             <span class="hero-hd-pill">🎬 院线巨幕 · 横向超清宣传海报</span>
-            <span class="hero-score-pill">★ 豆瓣 <strong id="heroScoreNum">9.2</strong></span>
+            <span class="hero-score-pill">★ 评分 <strong id="heroScoreNum">9.2</strong></span>
             <span class="hero-duration-pill" id="heroDurationPill">1080P 蓝光直连</span>
           </div>
           <h1 class="hero-billboard-title" id="heroLogoText"></h1>
@@ -1347,7 +1373,7 @@ function renderHero(items) {
         <div class="hero-backdrop-dock" id="heroBackdropDock">
           ${items.map((it, i) => `
             <button class="hero-dock-thumb ${i === 0 ? 'active' : ''}" data-hero="${i}" title="${esc(it.name)}">
-              <img src="${esc(picUrl(it.picSlide || it.pic, it.name, it.year))}" data-dock-idx="${i}" alt="${esc(it.name)}" decoding="async" />
+              <img src="${esc(picUrl(it._hdBackdrop || it.picSlide || it.backdrop || it.pic, it.name, it.year))}" data-dock-idx="${i}" alt="${esc(it.name)}" decoding="async" />
               <span class="hero-dock-title">${esc(it.name)}</span>
             </button>
           `).join('')}
@@ -1369,7 +1395,7 @@ function renderHero(items) {
   const dockBtns = Array.from(hero.querySelectorAll('.hero-dock-thumb'))
 
   function resolveItemBackdropUrl(item) {
-    const raw = item._hdBackdrop || item.picSlide || item.pic
+    const raw = item._hdBackdrop || item.picSlide || item.backdrop || (item.pic && !item.pic.includes('placeholder') ? item.pic : '')
     return picUrl(raw, item.name, item.year)
   }
 
@@ -1461,11 +1487,23 @@ function renderHero(items) {
     const play = event.target.closest('[data-act="play-hero"]')
     if (play) {
       event.stopPropagation()
+      const cur = items[state.heroIndex]
+      if (cur && (!play.dataset.site || !play.dataset.id)) {
+        playCircleMovie({ name: cur.name })
+        return
+      }
       navigate(`#/play/${play.dataset.site}/${play.dataset.id}/0/0`)
       return
     }
     const open = event.target.closest('[data-act="open"]')
-    if (open) openDetail(open.dataset.site, open.dataset.id)
+    if (open) {
+      const cur = items[state.heroIndex]
+      if (cur && (!open.dataset.site || !open.dataset.id)) {
+        playCircleMovie({ name: cur.name })
+        return
+      }
+      openDetail(open.dataset.site, open.dataset.id)
+    }
   }
 
   clearInterval(state.heroTimer)
