@@ -426,4 +426,18 @@ for (let i = 1; i < interstellarMoms.length; i++) {
 }
 console.log('✓ 16:9 横向高清宣传大海报 Hero、实时电影解说扩容与定格此刻 3-5s 视频自动排序合成电影解说验证全部通过')
 
-console.log('\n>>> 全部核心技术需求与安全合规项均已通过自动化验证! <<<')
+console.log('\n--- 验证 22: TMDB (themoviedb.org) 实时院线海报抓取与单流下推「推送流」架构 ---')
+assert(typeof metadataMod.fetchTmdbFeed === 'function', 'lib/metadata.js 必须导出 fetchTmdbFeed 实时抓取 TMDB 院线数据')
+assert(typeof apiMod.fetchTmdbFeed === 'function', 'lib/api.js 必须导出 fetchTmdbFeed')
+assert(appJs.includes('streamCardHTML') && appJs.includes('stream-feed-card'), 'src/app.js 必须实现推送流卡片渲染 streamCardHTML 与 .stream-feed-card')
+assert(appCss.includes('.stream-feed-card') && appCss.includes('.stream-media-frame') && appCss.includes('.stream-pill.active'), 'src/app.css 必须包含完整的推送流样式与频道切换胶囊')
+;(async () => {
+  const tmdbSample = await metadataMod.fetchTmdbFeed({ category: 'trending', page: 1 })
+  assert(Array.isArray(tmdbSample) && tmdbSample.length > 0, 'fetchTmdbFeed 必须返回非空的影视流列表')
+  const sampleItem = tmdbSample[0]
+  assert(sampleItem.title && sampleItem.backdrop && sampleItem.poster && sampleItem.release_date, 'TMDB 推送流项目必须包含标题、高清 16:9 剧照与 780P 竖版海报以及上映日期')
+  console.log(`[TMDB Stream] 成功实时获取 ${tmdbSample.length} 部院线项目: 首部《${sampleItem.title}》(${sampleItem.release_date}) 评分: ${sampleItem.vote_average}`)
+  console.log('✓ TMDB 实时海报流与新片专栏推送流架构验证全部通过')
+
+  console.log('\n>>> 全部核心技术需求与安全合规项均已通过自动化验证! <<<')
+})()

@@ -1677,281 +1677,483 @@ function userReelCardHTML(reel) {
   `
 }
 
+function streamCardHTML(item) {
+  const isReel = item.type === 'reel'
+  const isCommentary = item.type === 'commentary'
+  const isArticle = item.type === 'article'
+
+  const title = item.title || item.movieName || item.name || '精选大片'
+  const origTitle = item.original_title || ''
+  const backdrop = picUrl(item.backdrop || item.pic || item.poster, title)
+  const poster = picUrl(item.poster || item.pic || item.backdrop, title)
+  const score = item.vote_average || item.rating || item.heatScore || '8.2'
+  const dateStr = item.release_date || item.year || (item.updatedAt ? item.updatedAt.slice(0, 10) : '2026')
+  const genres = Array.isArray(item.genres) && item.genres.length ? item.genres : item.categoryTag ? [item.categoryTag] : ['院线热映']
+  const overview = item.overview || item.summary || item.script_summary || '全网同步实时院线上映，高画质原片与影迷精彩解说已就绪。'
+
+  let typeClass = 'trending'
+  let typeLabel = '🔴 TMDB 实时热映'
+  if (isReel) {
+    typeClass = 'reel'
+    typeLabel = `✦ 定格此刻 · ${item.reelClips ? item.reelClips.length : 3} 段连播`
+  } else if (isCommentary) {
+    typeClass = 'commentary'
+    typeLabel = '🎬 实时电影解说'
+  } else if (isArticle) {
+    typeClass = 'article'
+    typeLabel = '📖 深度视听导读'
+  }
+
+  return `
+    <article class="stream-feed-card" data-stream-id="${esc(item.id || '')}" data-movie-title="${esc(title)}">
+      <div class="stream-card-meta-top">
+        <div class="stream-origin-group">
+          <span class="stream-type-pill ${typeClass}">${esc(typeLabel)}</span>
+          <span class="stream-date-pill">🗓️ ${esc(dateStr)}</span>
+          ${genres.slice(0, 3).map((g) => `<span class="stream-genre-pill">${esc(g)}</span>`).join('')}
+        </div>
+        <div class="stream-score-group">
+          ${score ? `<span class="stream-score-badge">★ ${esc(score)}</span>` : ''}
+          <span class="stream-source-badge">${isReel ? '影悦定格合成' : isCommentary ? '全网解说' : 'TMDB 官方直连'}</span>
+        </div>
+      </div>
+
+      <div class="stream-media-frame">
+        <div class="stream-backdrop-wrap">
+          <img class="stream-backdrop-img" src="${esc(backdrop)}" data-pending-title="${esc(title)}" alt="${esc(title)}" loading="lazy" decoding="async" />
+          <div class="stream-backdrop-scrim"></div>
+        </div>
+        <div class="stream-poster-wrap">
+          <img class="stream-poster-img" src="${esc(poster)}" data-pending-title="${esc(title)}" alt="${esc(title)}" loading="lazy" decoding="async" />
+        </div>
+        <div class="stream-media-actions">
+          ${
+            isReel
+              ? `
+            <button class="stream-media-play-btn" data-play-user-reel="${esc(item.id)}" title="连播《${esc(title)}》合成电影解说">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              <span>连播解说</span>
+            </button>
+          `
+              : isCommentary
+              ? `
+            <button class="stream-media-play-btn" data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}" title="播放《${esc(title)}》解说视频">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              <span>播放解说</span>
+            </button>
+          `
+              : isArticle
+              ? `
+            <button class="stream-media-play-btn" data-read-article="${esc(item.id)}" title="阅读深度全文">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>深度导读</span>
+            </button>
+          `
+              : `
+            <button class="stream-media-play-btn" data-stream-play="${esc(title)}" title="立即全网并发匹配播放《${esc(title)}》">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              <span>立即播放</span>
+            </button>
+          `
+          }
+        </div>
+      </div>
+
+      <div class="stream-card-body">
+        <div class="stream-title-row">
+          <h2 class="stream-title">《${esc(title)}》${origTitle && origTitle !== title ? `<span class="stream-sub-title">${esc(origTitle)}</span>` : ''}</h2>
+        </div>
+        <p class="stream-overview">${esc(overview)}</p>
+
+        ${
+          isReel && Array.isArray(item.reelClips)
+            ? `
+          <div class="stream-reel-timeline-box">
+            <div class="stream-reel-timeline-head">
+              <span>✦ 定格此刻 · ${item.reelClips.length} 段高光解说时间轴 (创作者: ${esc(item.author_name || '影悦影迷')})</span>
+              <span class="stream-reel-duration">总长 ${item.totalDuration || 24} 秒</span>
+            </div>
+            <div class="stream-reel-clips-list">
+              ${item.reelClips
+                .map(
+                  (c, i) => `
+                <div class="stream-reel-clip-badge">
+                  <span class="clip-step">#${i + 1}</span>
+                  <span class="clip-time">${esc(c.clip_range_label || '')}</span>
+                  <span class="clip-note">${esc(c.quote_or_note || '')}</span>
+                </div>
+              `
+                )
+                .join('')}
+            </div>
+          </div>
+        `
+            : ''
+        }
+
+        <div class="stream-action-bar">
+          ${
+            isReel
+              ? `
+            <button class="btn-capsule appstore-get stream-btn-play" data-play-user-reel="${esc(item.id)}">
+              ▶ 连播合成解说 (${item.reelClips ? item.reelClips.length : 3}段)
+            </button>
+            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
+              🎞️ 完整正片
+            </button>
+          `
+              : isCommentary
+              ? `
+            <button class="btn-capsule appstore-get stream-btn-play" data-play-commentary-site="${esc(item.site)}" data-play-commentary-id="${esc(item.vodId || item.id)}">
+              ▶ 播放电影解说
+            </button>
+            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
+              🎞️ 完整正片
+            </button>
+          `
+              : isArticle
+              ? `
+            <button class="btn-capsule appstore-get stream-btn-play" data-read-article="${esc(item.id)}">
+              📖 阅读深度导读
+            </button>
+            <button class="btn-capsule stream-btn-play" data-stream-play="${esc(title)}" title="观看《${esc(title)}》完整正片">
+              ▶ 立即播放正片
+            </button>
+          `
+              : `
+            <button class="btn-capsule appstore-get stream-btn-play" data-stream-play="${esc(title)}">
+              ▶ 立即匹配播放
+            </button>
+          `
+          }
+          <button class="btn-capsule stream-btn-pin" data-stream-pin="${esc(title)}" title="为《${esc(title)}》截取 3-5 秒定格视频并添加解说">
+            ✦ 定格此刻
+          </button>
+          <button class="btn-capsule stream-btn-circle" data-stream-circle="${esc(title)}" title="将《${esc(title)}》加入影视圈影单">
+            + 收入影视圈
+          </button>
+          <button class="btn-capsule stream-btn-share" data-stream-share="${esc(title)}" data-stream-summary="${esc(overview)}" title="复制分享文案">
+            🔗 分享速递
+          </button>
+        </div>
+      </div>
+    </article>
+  `
+}
+
 async function renderMovieArticles(forceRefresh = false) {
-  setWindowTitle('新片专栏 · 实时电影解说视频与院线速递')
+  setWindowTitle('新片专栏 · 全球院线与影迷推送流')
   syncTopbarIdentity()
 
   const userReels = store.circles.commentaryReels()
+  const demoReel = {
+    id: 'reel_demo_interstellar',
+    movie_title: '星际穿越',
+    pic: 'https://image.tmdb.org/t/p/w1280/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg',
+    author_name: '深空观测者',
+    clips: [
+      { start_sec: 2526, end_sec: 2534, clip_duration: 8, clip_range_label: '42:06 - 42:14', quote_or_note: '库珀含泪驾车驶离玉米地，掀开副驾驶毛毯与火箭倒计时交错。', mood_tag: '💧 破防瞬间' },
+      { start_sec: 5606, end_sec: 5614, clip_duration: 8, clip_range_label: '01:33:26 - 01:33:34', quote_or_note: '米勒星球一小时等于地球七年，库珀看完跨越二十三年的录像失声痛哭。', mood_tag: '💧 破防瞬间' },
+      { start_sec: 8321, end_sec: 8329, clip_duration: 8, clip_range_label: '02:18:41 - 02:18:49', quote_or_note: '五维超立方体书架背后，库珀拨动引力将摩斯密码刻进女儿手表的秒针。', mood_tag: '🎞️ 封神镜头' },
+    ],
+    clip_count: 3,
+    total_duration: 24,
+    script_summary: '【第1段 42:06】驶离玉米地倒计时 ▸ 【第2段 01:33:26】跨越23年家书泪崩 ▸ 【第3段 02:18:41】五维书架引力摩斯密码',
+  }
+  const allReels = [...userReels, demoReel.movie_title && !userReels.some((r) => r.movie_title === '星际穿越') ? demoReel : null].filter(Boolean)
 
   view.innerHTML = `
-    <div class="articles-page-header">
-      <div>
-        <div class="articles-kicker">LIVE COMMENTARY & NEW RELEASES · 多源多页实时直连</div>
-        <h1 class="page-title" style="margin:4px 0 6px 0">新片专栏 · 实时电影解说与院线热映</h1>
-        <p class="articles-sub">实时并发聚合 60+ 部全网最新电影解说视频、几分钟速看导读与「✦ 定格此刻」多片段合成解说，点击即播。</p>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn-capsule small" id="btnRefreshCommentaries" title="立即从全网直连源拉取最新解说视频">
-          🔄 实时刷新
-        </button>
-        <div class="heat-radar-pill">
-          <span class="heat-dot"></span>
-          <span id="commentarySyncStatus">正在同步 60+ 部实时电影解说…</span>
+    <div class="stream-feed-wrapper">
+      <div class="stream-header">
+        <div>
+          <div class="articles-kicker">LIVE TMDB DISCOVERY STREAM · 实时推送流</div>
+          <h1 class="page-title" style="margin:4px 0 6px 0">新片专栏 · 全球院线与影迷推送流</h1>
+          <p class="articles-sub">直连 themoviedb.org 官方实时海报与 2026 院线速递，汇聚「✦ 定格此刻」串播解说与全网精读流，单流下推，即点即播。</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn-capsule small" id="btnRefreshStream" title="立即从 themoviedb.org 与全网直连源拉取最新院线流">
+            🔄 实时刷新
+          </button>
+          <div class="heat-radar-pill">
+            <span class="heat-dot" style="background:#10b981;box-shadow:0 0 8px #10b981"></span>
+            <span id="streamSyncStatus">🟢 TMDB 全球院线实时直连 · 已同步 2026 院线海报</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 用户自制/预置「定格此刻 · 自动排序合并电影解说」板块 -->
-    <section class="section" id="secUserMergedReels" style="margin-bottom:26px">
-      <div class="section-head" style="margin-bottom:12px">
-        <h2>✦ 定格此刻 · 自动排序合成电影解说</h2>
-        <span class="more" style="cursor:default">在播放页点击「✦ 定格此刻」添加多个 3-5 秒片段，系统自动按时间轴排序合并为连播解说</span>
+      <div class="stream-channel-bar" id="streamChannelBar">
+        <button class="stream-pill active" data-stream-tab="trending">🔥 院线热映流 (TMDB 实时)</button>
+        <button class="stream-pill" data-stream-tab="reels">✦ 影迷解说串播流</button>
+        <button class="stream-pill" data-stream-tab="commentary">🎬 实时解说速读流</button>
+        <button class="stream-pill" data-stream-tab="top_rated">⭐ 全球高分榜单流</button>
+        <button class="stream-pill" data-stream-tab="all">✦ 综合全景流</button>
       </div>
-      <div class="commentary-video-grid" id="userMergedReelsGrid"></div>
-    </section>
 
-    <!-- 核心板块 1：全网实时电影解说视频流（扩容至 60+ 部 + 题材分类筛选） -->
-    <section class="section" id="secLiveCommentaries" style="margin-bottom:28px">
-      <div class="section-head" style="margin-bottom:12px;flex-wrap:wrap;gap:12px">
-        <h2>🎬 全网实时电影解说视频专栏</h2>
-        <div class="filters" id="commentaryFilterBar" style="margin:0">
-          <button class="chip active" data-comm-filter="all">全部解说</button>
-          <button class="chip" data-comm-filter="latest">🔥 今日最新</button>
-          <button class="chip" data-comm-filter="suspense">🧠 悬疑惊悚</button>
-          <button class="chip" data-comm-filter="action">🚀 科幻动作</button>
-          <button class="chip" data-comm-filter="drama">😭 高分剧情</button>
-        </div>
-        <span class="more" id="commentaryCountLabel" style="cursor:default">直连多源多页抓取 · 点击即播解说或原片</span>
-      </div>
-      <div class="commentary-video-grid" id="commentaryVideoGrid">
-        ${Array.from({ length: 9 }, () => '<div class="skeleton" style="height:240px;border-radius:18px"></div>').join('')}
-      </div>
-      <div id="commentaryLoadMoreWrap" style="text-align:center;margin-top:18px;display:none">
-        <button class="btn-capsule appstore-get" id="btnLoadMoreCommentaries" style="padding:0 28px;height:38px">
-          展开更多实时电影解说视频 ↓
-        </button>
-      </div>
-    </section>
-
-    <!-- 核心板块 2：今日 24h 实时院线与流媒体上新速递 -->
-    <section class="section" id="secDynamicNewReleases" style="margin-bottom:28px">
-      <div class="section-head" style="margin-bottom:14px">
-        <h2>🔥 今日院线与流媒体 24h 实时上新</h2>
-        <span class="more" style="cursor:default">来自直连片源 24 小时内最新入库正片</span>
-      </div>
-      <div class="grid" id="dynamicNewReleasesGrid">
-        ${skeletonGrid(6)}
-      </div>
-    </section>
-
-    <!-- 板块 3：主编深度视听专栏（经典导读与名场面解析） -->
-    <section class="articles-feed-section">
-      <div class="section-head" style="margin-bottom:16px">
-        <h2>📖 影悦深度视听导读专栏 (${MOVIE_ARTICLES.length} 篇)</h2>
-        <span class="more" style="cursor:default">含高光时刻锚点解析与一键秒播正片</span>
-      </div>
-      <div class="articles-editorial-grid" id="articlesEditorialGrid">
-        ${MOVIE_ARTICLES.map((art) => `
-          <article class="editorial-article-card" data-article-id="${esc(art.id)}">
-            <div class="article-cover-wrap">
-              <img src="${esc(picUrl(art.pic, art.movieName))}" alt="${esc(art.movieName)}" loading="lazy" />
-              <span class="article-heat-badge">🔥 ${esc(art.heatScore)}</span>
-              <span class="article-score-pill">★ ${esc(art.rating)}</span>
-            </div>
-            <div class="article-body-wrap">
-              <div class="article-meta-top">
-                <span class="article-cat-pill">${esc(art.categoryTag)}</span>
-                <span class="article-rank-tag">${esc(art.heatRank)}</span>
-                <span class="article-read-time">⏱ ${esc(art.readTime)}</span>
-              </div>
-              <h2 class="article-headline">${esc(art.title)}</h2>
-              <p class="article-summary">${esc(art.summary)}</p>
-              <div class="article-footer-bar">
-                <div class="article-author-info">
-                  <span class="author-dot">✦</span>
-                  <span>${esc(art.author)} · 《${esc(art.movieName)}》(${esc(art.year)})</span>
-                </div>
-                <div class="article-actions">
-                  <button class="btn small" data-read-article="${esc(art.id)}">📖 阅读深度全文</button>
-                  <button class="btn primary small" data-play-article-movie="${esc(art.movieName)}">▶ 立即播放正片</button>
-                </div>
-              </div>
-            </div>
-          </article>
+      <div class="stream-feed-container" id="streamFeedContainer">
+        ${Array.from({ length: 4 }, () => `
+          <div class="skeleton" style="height:480px;border-radius:26px;margin-bottom:12px"></div>
         `).join('')}
       </div>
-    </section>
+
+      <div id="streamLoadMoreWrap" style="text-align:center;margin-top:28px;display:none">
+        <button class="btn-capsule appstore-get" id="btnStreamLoadMore" style="padding:0 36px;height:42px;font-size:14px;font-weight:700">
+          展开更多实时院线流 ↓
+        </button>
+      </div>
+    </div>
   `
 
-  hydratePendingPosters(view)
+  let currentTab = 'trending'
+  let curPage = 1
+  let tmdbCacheData = []
+  let commCacheData = []
 
-  // 渲染定格合成电影解说（包含用户自制与官方多段示范）
-  ;(async () => {
-    const reelGrid = document.getElementById('userMergedReelsGrid')
-    if (!reelGrid) return
-    const demoReel = {
-      id: 'reel_demo_interstellar',
-      movie_title: '星际穿越',
-      pic: 'https://image.tmdb.org/t/p/w1280/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg',
-      author_name: '深空观测者',
-      clips: [
-        { start_sec: 2526, end_sec: 2534, clip_duration: 8, clip_range_label: '42:06 - 42:14', quote_or_note: '库珀含泪驾车驶离玉米地，掀开副驾驶毛毯与火箭倒计时交错。', mood_tag: '💧 破防瞬间' },
-        { start_sec: 5606, end_sec: 5614, clip_duration: 8, clip_range_label: '01:33:26 - 01:33:34', quote_or_note: '米勒星球一小时等于地球七年，库珀看完跨越二十三年的录像失声痛哭。', mood_tag: '💧 破防瞬间' },
-        { start_sec: 8321, end_sec: 8329, clip_duration: 8, clip_range_label: '02:18:41 - 02:18:49', quote_or_note: '五维超立方体书架背后，库珀拨动引力将摩斯密码刻进女儿手表的秒针。', mood_tag: '🎞️ 封神镜头' },
-      ],
-      clip_count: 3,
-      total_duration: 24,
-      script_summary: '【第1段 42:06】驶离玉米地倒计时 ▸ 【第2段 01:33:26】跨越23年家书泪崩 ▸ 【第3段 02:18:41】五维书架引力摩斯密码',
-    }
-    const allReels = [...userReels, demoReel.movie_title && !userReels.some((r) => r.movie_title === '星际穿越') ? demoReel : null].filter(Boolean)
-    reelGrid.innerHTML = allReels.map(userReelCardHTML).join('')
-    hydratePendingPosters(reelGrid)
+  function bindStreamCardEvents(container) {
+    hydratePendingPosters(container)
 
-    reelGrid.querySelectorAll('[data-play-user-reel]').forEach((el) => {
+    // 1. 立即全网并发匹配播放正片
+    container.querySelectorAll('[data-stream-play]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation()
+        const title = btn.dataset.streamPlay
+        if (title) playCircleMovie({ name: title })
+      }
+    })
+
+    // 2. 启动定格此刻创作台
+    container.querySelectorAll('[data-stream-pin]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation()
+        const title = btn.dataset.streamPin
+        if (title) openPinMomentModal({ detail: { name: title } })
+      }
+    })
+
+    // 3. 收入影视圈
+    container.querySelectorAll('[data-stream-circle]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation()
+        const title = btn.dataset.streamCircle
+        const circles = store.circles.allCustom()
+        if (!circles.length) {
+          toast('请先在「影视圈」创建你的主题影单')
+          navigate('#/circles')
+          return
+        }
+        store.circles.addMovie(circles[0].id, { name: title })
+        toast(`♥ 已将《${title}》收入「${circles[0].title}」`)
+      }
+    })
+
+    // 4. 复制分享速递
+    container.querySelectorAll('[data-stream-share]').forEach((btn) => {
+      btn.onclick = (e) => {
+        e.stopPropagation()
+        const title = btn.dataset.streamShare
+        const summary = btn.dataset.streamSummary || ''
+        const text = `【影悦 · 院线速递】《${title}》\n${summary}\n在「影悦 · 独立版」免 VPN 官方原画直连秒播`
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text).catch(() => {})
+        }
+        toast(`已复制《${title}》电影速递到剪贴板`)
+      }
+    })
+
+    // 5. 播放用户自制/示范合成解说
+    container.querySelectorAll('[data-play-user-reel]').forEach((el) => {
       el.onclick = (e) => {
-        if (e.target.closest('[data-play-base-movie]')) return
+        if (e.target.closest('[data-stream-play]')) return
         e.stopPropagation()
         const rid = el.dataset.playUserReel
         const targetReel = allReels.find((r) => r.id === rid)
         if (targetReel) launchCommentaryReel(targetReel)
       }
     })
-    reelGrid.querySelectorAll('[data-play-base-movie]').forEach((btn) => {
-      btn.onclick = (e) => {
+
+    // 6. 播放第三方电影解说
+    container.querySelectorAll('[data-play-commentary-site]').forEach((el) => {
+      el.onclick = (e) => {
+        if (e.target.closest('[data-stream-play]')) return
         e.stopPropagation()
-        playCircleMovie({ name: btn.dataset.playBaseMovie })
+        const sKey = el.dataset.playCommentarySite
+        const vId = el.dataset.playCommentaryId
+        if (sKey && vId) navigate(`#/play/${sKey}/${vId}/0/0`)
       }
     })
-  })()
 
-  document.getElementById('btnRefreshCommentaries')?.addEventListener('click', () => {
-    toast('正在实时同步 60+ 部最新电影解说视频与今日新片…')
-    renderMovieArticles(true)
-  })
+    // 7. 阅读专栏文章全文
+    container.querySelectorAll('[data-read-article]').forEach((el) => {
+      el.onclick = (e) => {
+        e.stopPropagation()
+        const aid = el.dataset.readArticle
+        const found = MOVIE_ARTICLES.find((x) => x.id === aid)
+        if (found) openArticleReaderModal(found)
+      }
+    })
+  }
 
-  // 点击阅读全文或卡片本身打开沉浸式专栏阅读器
-  view.querySelectorAll('[data-read-article], .editorial-article-card').forEach((el) => {
-    el.onclick = (e) => {
-      if (e.target.closest('[data-play-article-movie]')) return
-      const aid = el.dataset.readArticle || el.dataset.articleId || el.closest('[data-article-id]')?.dataset.articleId
-      const found = MOVIE_ARTICLES.find((x) => x.id === aid)
-      if (found) openArticleReaderModal(found)
+  async function loadStream(append = false) {
+    const feedContainer = document.getElementById('streamFeedContainer')
+    const loadMoreWrap = document.getElementById('streamLoadMoreWrap')
+    const btnLoadMore = document.getElementById('btnStreamLoadMore')
+    const syncStatus = document.getElementById('streamSyncStatus')
+    if (!feedContainer) return
+
+    if (!append) {
+      feedContainer.innerHTML = Array.from({ length: 3 }, () => `
+        <div class="skeleton" style="height:480px;border-radius:26px;margin-bottom:12px"></div>
+      `).join('')
+    }
+
+    try {
+      let cardsHtml = ''
+
+      if (currentTab === 'trending' || currentTab === 'top_rated') {
+        const cat = currentTab === 'trending' ? 'now_playing' : 'top_rated'
+        let items = []
+        try {
+          items = await shellApi.api.tmdbFeed({ category: cat, page: curPage, force: Boolean(forceRefresh) })
+        } catch (_) {}
+        if (!items || !items.length) {
+          items = await shellApi.api.tmdbFeed({ category: 'trending', page: curPage, force: true })
+        }
+        tmdbCacheData = items || []
+        cardsHtml = tmdbCacheData.map((m) => streamCardHTML({ ...m, type: 'tmdb' })).join('')
+        if (syncStatus) syncStatus.textContent = `🟢 TMDB 全球院线实时直连 · 已同步 ${tmdbCacheData.length} 部 2026 院线海报`
+        if (loadMoreWrap) loadMoreWrap.style.display = 'block'
+      } else if (currentTab === 'reels') {
+        cardsHtml = allReels
+          .map((r) =>
+            streamCardHTML({
+              id: r.id,
+              type: 'reel',
+              title: r.movie_title,
+              pic: r.pic,
+              author_name: r.author_name,
+              reelClips: r.clips,
+              totalDuration: r.total_duration,
+              overview: r.script_summary || '根据该电影多段高光时刻按时间轴自动排序并合成电影解说。',
+              vote_average: '9.4',
+              release_date: '影迷解说串播',
+            })
+          )
+          .join('')
+        if (syncStatus) syncStatus.textContent = `✦ 已就绪 ${allReels.length} 部定格此刻合成解说串播`
+        if (loadMoreWrap) loadMoreWrap.style.display = 'none'
+      } else if (currentTab === 'commentary') {
+        if (!commCacheData.length || forceRefresh) {
+          commCacheData = await shellApi.api.commentaries({ limit: 48, force: Boolean(forceRefresh) })
+        }
+        const commCards = (commCacheData || []).map((c) => {
+          const base = c.baseMovieTitle || cleanTitle(c.name) || c.name
+          return streamCardHTML({
+            id: c.id,
+            vodId: c.id,
+            site: c.site,
+            type: 'commentary',
+            title: base,
+            original_title: c.name,
+            pic: c.pic,
+            vote_average: '8.0',
+            release_date: c.updatedAt ? c.updatedAt.slice(0, 10) : '今日实时更新',
+            genres: ['电影解说', c.remarks || '精选速读'],
+            overview: `【${c.siteName || '全网解说'}】${c.name} · 支持直连秒播解说或完整原片。`,
+          })
+        })
+        const articleCards = MOVIE_ARTICLES.map((art) =>
+          streamCardHTML({
+            id: art.id,
+            type: 'article',
+            title: art.movieName,
+            original_title: art.title,
+            pic: art.pic,
+            rating: art.rating,
+            release_date: art.year,
+            genres: [art.categoryTag, '深度视听'],
+            overview: art.summary,
+          })
+        )
+        cardsHtml = [...articleCards, ...commCards].join('')
+        if (syncStatus) syncStatus.textContent = `已实时同步 ${commCacheData.length} 部最新电影解说`
+        if (loadMoreWrap) loadMoreWrap.style.display = 'none'
+      } else {
+        // all: 综合全景流
+        let tmdbItems = []
+        try {
+          tmdbItems = await shellApi.api.tmdbFeed({ category: 'trending', page: 1, force: Boolean(forceRefresh) })
+        } catch (_) {}
+        const tmdbCards = (tmdbItems || []).slice(0, 4).map((m) => streamCardHTML({ ...m, type: 'tmdb' }))
+        const reelCards = allReels.slice(0, 2).map((r) =>
+          streamCardHTML({
+            id: r.id,
+            type: 'reel',
+            title: r.movie_title,
+            pic: r.pic,
+            author_name: r.author_name,
+            reelClips: r.clips,
+            totalDuration: r.total_duration,
+            overview: r.script_summary,
+            vote_average: '9.4',
+            release_date: '影迷解说串播',
+          })
+        )
+        const articleCards = MOVIE_ARTICLES.slice(0, 2).map((art) =>
+          streamCardHTML({
+            id: art.id,
+            type: 'article',
+            title: art.movieName,
+            original_title: art.title,
+            pic: art.pic,
+            rating: art.rating,
+            release_date: art.year,
+            genres: [art.categoryTag, '深度视听'],
+            overview: art.summary,
+          })
+        )
+        cardsHtml = [...tmdbCards, ...reelCards, ...articleCards].join('')
+        if (syncStatus) syncStatus.textContent = '🟢 实时推送流：全球院线 + 影迷串播 + 深度导读'
+        if (loadMoreWrap) loadMoreWrap.style.display = 'none'
+      }
+
+      if (append) {
+        const dummy = document.createElement('div')
+        dummy.innerHTML = cardsHtml
+        bindStreamCardEvents(dummy)
+        while (dummy.firstChild) feedContainer.appendChild(dummy.firstChild)
+      } else {
+        feedContainer.innerHTML = cardsHtml || '<div class="empty" style="padding:48px 0">暂无实时推送内容，请点击「🔄 实时刷新」</div>'
+        bindStreamCardEvents(feedContainer)
+      }
+    } catch (err) {
+      feedContainer.innerHTML = '<div class="empty" style="padding:48px 0">获取实时流超时，请点击右上角「🔄 实时刷新」重试</div>'
+    }
+  }
+
+  // 绑定频道切换
+  document.getElementById('streamChannelBar')?.querySelectorAll('[data-stream-tab]').forEach((btn) => {
+    btn.onclick = () => {
+      document.getElementById('streamChannelBar').querySelectorAll('.stream-pill').forEach((p) => p.classList.remove('active'))
+      btn.classList.add('active')
+      currentTab = btn.dataset.streamTab
+      curPage = 1
+      loadStream(false)
     }
   })
 
-  // 点击「立即播放正片」直接触发多源并发秒播
-  view.querySelectorAll('[data-play-article-movie]').forEach((btn) => {
-    btn.onclick = (e) => {
-      e.stopPropagation()
-      const movieName = btn.dataset.playArticleMovie
-      if (movieName) playCircleMovie({ name: movieName })
-    }
+  // 绑定实时刷新
+  document.getElementById('btnRefreshStream')?.addEventListener('click', () => {
+    toast('正在实时同步 themoviedb.org 官方院线海报与最新解说流…')
+    curPage = 1
+    loadStream(false)
   })
 
-  // 并发拉取：1. 60+ 部实时电影解说视频流 + 2. 24h 最新上映正片
-  ;(async () => {
-    try {
-      const comms = await shellApi.api.commentaries({ limit: 64, force: Boolean(forceRefresh) })
-      const commGrid = document.getElementById('commentaryVideoGrid')
-      const syncStatus = document.getElementById('commentarySyncStatus')
-      const countLabel = document.getElementById('commentaryCountLabel')
-      const moreWrap = document.getElementById('commentaryLoadMoreWrap')
-      const btnMore = document.getElementById('btnLoadMoreCommentaries')
-      const filterBar = document.getElementById('commentaryFilterBar')
+  // 绑定加载更多
+  document.getElementById('btnStreamLoadMore')?.addEventListener('click', () => {
+    curPage++
+    loadStream(true)
+  })
 
-      if (commGrid && Array.isArray(comms) && comms.length) {
-        let activeFilter = 'all'
-        let visibleCount = 24
-
-        function getFilteredList() {
-          if (activeFilter === 'latest') return comms.slice(0, 30)
-          if (activeFilter === 'suspense') {
-            const list = comms.filter((c) => /悬疑|惊悚|犯罪|恐怖|迷雾|杀|案|侦探|密室|诡/.test((c.name || '') + (c.content || '')))
-            return list.length >= 6 ? list : comms.filter((_, i) => i % 3 === 0)
-          }
-          if (activeFilter === 'action') {
-            const list = comms.filter((c) => /科幻|动作|战争|灾难|冒险|特工|枪|战|星际|未来|机甲/.test((c.name || '') + (c.content || '')))
-            return list.length >= 6 ? list : comms.filter((_, i) => i % 3 === 1)
-          }
-          if (activeFilter === 'drama') {
-            const list = comms.filter((c) => /剧情|爱情|家庭|催泪|治愈|人生|喜剧|奇幻/.test((c.name || '') + (c.content || '')))
-            return list.length >= 6 ? list : comms.filter((_, i) => i % 3 === 2)
-          }
-          return comms
-        }
-
-        function paintCommGrid() {
-          const filtered = getFilteredList()
-          const slice = filtered.slice(0, visibleCount)
-          commGrid.innerHTML = slice.map(commentaryCardHTML).join('')
-          if (syncStatus) syncStatus.textContent = `已实时同步 ${comms.length} 部最新解说`
-          if (countLabel) countLabel.textContent = `当前分类共 ${filtered.length} 部实时电影解说视频 · 支持直连秒播`
-          if (moreWrap && btnMore) {
-            if (filtered.length > visibleCount) {
-              moreWrap.style.display = 'block'
-              btnMore.textContent = `展开剩余 ${filtered.length - visibleCount} 部实时电影解说视频 ↓`
-            } else {
-              moreWrap.style.display = 'none'
-            }
-          }
-          hydratePendingPosters(commGrid)
-
-          commGrid.querySelectorAll('[data-play-base-movie]').forEach((btn) => {
-            btn.onclick = (e) => {
-              e.stopPropagation()
-              const baseTitle = btn.dataset.playBaseMovie
-              if (baseTitle) playCircleMovie({ name: baseTitle })
-            }
-          })
-
-          commGrid.querySelectorAll('[data-play-commentary-site]').forEach((el) => {
-            el.onclick = (e) => {
-              if (e.target.closest('[data-play-base-movie]')) return
-              e.stopPropagation()
-              const sKey = el.dataset.playCommentarySite
-              const vId = el.dataset.playCommentaryId
-              if (sKey && vId) navigate(`#/play/${sKey}/${vId}/0/0`)
-            }
-          })
-        }
-
-        paintCommGrid()
-
-        if (btnMore) {
-          btnMore.onclick = () => {
-            visibleCount += 24
-            paintCommGrid()
-          }
-        }
-
-        if (filterBar) {
-          filterBar.querySelectorAll('[data-comm-filter]').forEach((chip) => {
-            chip.onclick = () => {
-              filterBar.querySelectorAll('.chip').forEach((c) => c.classList.remove('active'))
-              chip.classList.add('active')
-              activeFilter = chip.dataset.commFilter
-              visibleCount = 24
-              paintCommGrid()
-            }
-          })
-        }
-      } else if (commGrid) {
-        commGrid.innerHTML = `<div class="empty" style="grid-column:1/-1;padding:36px 0">暂未获取到实时解说视频，请点击右上角「🔄 实时刷新」重试</div>`
-      }
-    } catch (_) {}
-  })()
-
-  ;(async () => {
-    try {
-      const dailyItems = await shellApi.api.daily({ hours: 24, limit: 18 })
-      const deduped = dedupeItems(dailyItems || [])
-      const gridDyn = document.getElementById('dynamicNewReleasesGrid')
-      if (gridDyn && deduped.length) {
-        gridDyn.innerHTML = deduped.slice(0, 12).map(cardHTML).join('')
-        hydratePendingPosters(gridDyn)
-      }
-    } catch (_) {}
-  })()
+  loadStream(false)
 }
 
 function openArticleReaderModal(art) {

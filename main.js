@@ -500,6 +500,10 @@ function registerIpc() {
     return api.fetchMovieCommentaries(sources.enabled(), { limit: limit || 64, force: Boolean(force) })
   })
 
+  ipcMain.handle('api:tmdbFeed', async (_e, { category, page, force } = {}) => {
+    return metadata.fetchTmdbFeed({ category, page, force })
+  })
+
   ipcMain.handle('api:rankings', async (_e, { type, limit } = {}) => {
     return api.fetchRankings(sources.enabled(), { type: type || 'all', limit: limit || 20 })
   })

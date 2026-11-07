@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld('kky', {
     findPlayable: (payload) => ipcRenderer.invoke('api:findPlayable', payload),
     daily: (payload) => ipcRenderer.invoke('api:daily', payload),
     commentaries: (payload) => ipcRenderer.invoke('api:commentaries', payload),
+    tmdbFeed: (payload) => ipcRenderer.invoke('api:tmdbFeed', payload),
     rankings: (payload) => ipcRenderer.invoke('api:rankings', payload),
     search: (payload) => ipcRenderer.invoke('api:search', payload),
     enrichPosters: (items) => ipcRenderer.invoke('api:enrichPosters', items),
