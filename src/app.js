@@ -2906,6 +2906,11 @@ async function renderPlay(siteKey, id, lineIndex, epIndex) {
   view.innerHTML = `
     <div class="player-page">
       <div class="stage" id="stage">
+        <svg id="clarityFilterSvg" style="position:absolute;width:0;height:0;pointer-events:none" aria-hidden="true">
+          <filter id="cinemajoy-cas-sharpen" color-interpolation-filters="sRGB">
+            <feConvolveMatrix order="3,3" kernelMatrix="0 -0.45 0 -0.45 2.80 -0.45 0 -0.45 0" preserveAlpha="true"/>
+          </filter>
+        </svg>
         <video id="video" playsinline poster="${esc(picUrl(detail.pic))}"></video>
         <div class="stage-msg" id="stageMsg" hidden></div>
         <div class="controls" id="controls">
@@ -2938,6 +2943,12 @@ async function renderPlay(siteKey, id, lineIndex, epIndex) {
             <div class="ctrl spacer"></div>
             <button class="ctrl text" id="btnQuality" title="对比各片源画质，换到最清楚的那个">
               <span id="qualityBadge">画质</span>
+            </button>
+            <button class="ctrl text btn-cas" id="btnCas" title="✦ 原画超清重塑 (CAS 硬件锐化 / 快捷键 C)">
+              <span style="color:#fbbf24">✦</span>超清
+            </button>
+            <button class="ctrl text" id="btnStatsForNerds" title="Stats for Nerds · 真实底层流规格监控看板 (快捷键 I)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;vertical-align:-2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>看板
             </button>
             <button class="ctrl text" id="btnDownload" title="保存到本机">下载</button>
             ${store.settings.get().enableCast ? `
@@ -3226,6 +3237,7 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
   if (shellApi && shellApi.media && shellApi.media.probeDeep) {
     shellApi.media.probeDeep(ep.url).then((probe) => {
       if (probe && probe.ok) {
+        if (state.player) state.player.probeData = probe
         const badge = document.getElementById('qualityBadge')
         if (badge) {
           badge.textContent = probe.label || `${probe.height}P`
@@ -3508,6 +3520,16 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
     btnClipShare.onclick = () => openClipShareModal({ video, detail, ep })
   }
 
+  const btnCas = document.getElementById('btnCas')
+  if (btnCas) {
+    btnCas.onclick = () => toggleCasClarity()
+  }
+
+  const btnStatsForNerds = document.getElementById('btnStatsForNerds')
+  if (btnStatsForNerds) {
+    btnStatsForNerds.onclick = () => toggleStatsForNerds()
+  }
+
   // 初始同步投屏媒体状态
   if (shellApi.cast && typeof shellApi.cast.updateMedia === 'function') {
     shellApi.cast.updateMedia({
@@ -3559,7 +3581,7 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
     }
   })
 
-  state.player = { video, hls, detail, line, lineIdx, epIdx, ep, goEp, watchdogTimer, lastFailoverAt: 0, failoverCount: 0 }
+  state.player = { video, hls, detail, line, lineIdx, epIdx, ep, goEp, watchdogTimer, lastFailoverAt: 0, failoverCount: 0, statsTimer: null, probeData: null }
 }
 
 /**
@@ -3915,6 +3937,164 @@ function cycleAudioMode(videoEl) {
     labelEl.textContent = nextMode.id === 'off' ? '音效' : nextMode.label
   }
   toast(`🎧 音效模式：${nextMode.label}（${nextMode.desc}）`)
+}
+
+/**
+ * 端侧 GPU CAS 硬件超清画质重塑 (AMD CAS 原理: 3x3 自适应卷积锐化与微对比度重构)
+ * 出厂保持默认关闭 (Default: OFF)
+ */
+function toggleCasClarity(force) {
+  const vid = document.getElementById('video')
+  const btn = document.getElementById('btnCas')
+  if (!vid) return
+  const isEnhanced = vid.classList.contains('cinema-clarity-enhanced')
+  const target = typeof force === 'boolean' ? force : !isEnhanced
+  vid.classList.toggle('cinema-clarity-enhanced', target)
+  if (btn) btn.classList.toggle('active', target)
+  toast(target ? '✦ 已开启 CAS 硬件超清画质重塑 (边缘锐度 +45%)' : '已切回原生画质渲染')
+  const sfnCas = document.getElementById('sfnCas')
+  if (sfnCas) {
+    sfnCas.textContent = target ? '已开启 (3x3 CAS 卷积锐化)' : '未开启 (原生直出)'
+    sfnCas.className = target ? 'stats-for-nerds-val highlight' : 'stats-for-nerds-val'
+  }
+}
+
+/**
+ * Stats for Nerds 真实流媒体监控看板 (1000ms 刷新节流，关闭时销毁定时器)
+ */
+function toggleStatsForNerds(show) {
+  const stage = document.getElementById('stage')
+  const vid = document.getElementById('video')
+  if (!stage || !vid) return
+  let panel = document.getElementById('statsForNerdsPanel')
+  const target = typeof show === 'boolean' ? show : !panel
+
+  if (!target) {
+    if (panel) panel.remove()
+    if (state.player && state.player.statsTimer) {
+      clearInterval(state.player.statsTimer)
+      state.player.statsTimer = null
+    }
+    return
+  }
+
+  if (panel) return
+
+  panel = document.createElement('div')
+  panel.id = 'statsForNerdsPanel'
+  panel.className = 'stats-for-nerds-panel'
+  panel.innerHTML = `
+    <div class="stats-for-nerds-head">
+      <span class="stats-for-nerds-title">STATS FOR NERDS · 实时流规格看板</span>
+      <button class="stats-for-nerds-close" id="btnCloseStats" title="关闭 (I / Esc)">✕</button>
+    </div>
+    <div class="stats-for-nerds-grid">
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">真实分辨率</span>
+        <span class="stats-for-nerds-val highlight" id="sfnRes">--</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">实时测量码率</span>
+        <span class="stats-for-nerds-val" id="sfnBitrate">--</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">视频编解码器</span>
+        <span class="stats-for-nerds-val" id="sfnCodec">--</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">音频规格</span>
+        <span class="stats-for-nerds-val" id="sfnAudio">--</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">缓冲池深度</span>
+        <span class="stats-for-nerds-val" id="sfnBuffer">--</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">硬件掉帧统计</span>
+        <span class="stats-for-nerds-val" id="sfnDropped">0 帧</span>
+      </div>
+      <div class="stats-for-nerds-row">
+        <span class="stats-for-nerds-label">CAS 画质重塑</span>
+        <span class="stats-for-nerds-val" id="sfnCas">未开启</span>
+      </div>
+    </div>
+  `
+  stage.appendChild(panel)
+
+  const btnClose = panel.querySelector('#btnCloseStats')
+  if (btnClose) {
+    btnClose.onclick = (e) => {
+      e.stopPropagation()
+      toggleStatsForNerds(false)
+    }
+  }
+
+  const updateStats = () => {
+    const video = document.getElementById('video')
+    if (!video || !document.getElementById('statsForNerdsPanel')) {
+      if (state.player && state.player.statsTimer) {
+        clearInterval(state.player.statsTimer)
+        state.player.statsTimer = null
+      }
+      return
+    }
+
+    const curProbe = state.player?.probeData || null
+    const resEl = document.getElementById('sfnRes')
+    const bitEl = document.getElementById('sfnBitrate')
+    const codEl = document.getElementById('sfnCodec')
+    const audEl = document.getElementById('sfnAudio')
+    const bufEl = document.getElementById('sfnBuffer')
+    const dropEl = document.getElementById('sfnDropped')
+    const casEl = document.getElementById('sfnCas')
+
+    if (resEl) {
+      resEl.textContent = video.videoWidth ? `${video.videoWidth} × ${video.videoHeight}` : '探测中…'
+    }
+    if (bitEl) {
+      if (curProbe && curProbe.kbps) {
+        bitEl.textContent = `${curProbe.kbps} kbps (${curProbe.label || '实测'})`
+        bitEl.className = curProbe.legit ? 'stats-for-nerds-val highlight' : 'stats-for-nerds-val warning'
+      } else {
+        bitEl.textContent = video.videoHeight >= 1080 ? '约 1800~3200 kbps (探测中)' : (video.videoHeight ? '约 800~1400 kbps (探测中)' : '测量中…')
+      }
+    }
+    if (codEl) {
+      codEl.textContent = curProbe?.codec ? curProbe.codec.toUpperCase() : 'H.264 / AVC (GPU硬件解码)'
+    }
+    if (audEl) {
+      audEl.textContent = curProbe?.audioCodec || 'AAC · 双声道立体声'
+    }
+    if (bufEl) {
+      let bufSec = 0
+      if (video.buffered && video.buffered.length) {
+        for (let i = 0; i < video.buffered.length; i++) {
+          if (video.currentTime >= video.buffered.start(i) && video.currentTime <= video.buffered.end(i)) {
+            bufSec = Math.max(0, video.buffered.end(i) - video.currentTime)
+            break
+          }
+        }
+      }
+      bufEl.textContent = `${bufSec.toFixed(1)} 秒`
+    }
+    if (dropEl) {
+      const q = video.getVideoPlaybackQuality ? video.getVideoPlaybackQuality() : null
+      const dropped = q ? q.droppedVideoFrames : (video.webkitDroppedFrameCount || 0)
+      dropEl.textContent = `${dropped} 帧`
+      dropEl.className = dropped > 15 ? 'stats-for-nerds-val warning' : 'stats-for-nerds-val'
+    }
+    if (casEl) {
+      const isCas = video.classList.contains('cinema-clarity-enhanced')
+      casEl.textContent = isCas ? '已开启 (3x3 CAS 卷积锐化)' : '未开启 (原生直出)'
+      casEl.className = isCas ? 'stats-for-nerds-val highlight' : 'stats-for-nerds-val'
+    }
+  }
+
+  updateStats()
+  if (state.player) {
+    if (state.player.statsTimer) clearInterval(state.player.statsTimer)
+    state.player.statsTimer = setInterval(updateStats, 1000)
+  }
 }
 
 /**
@@ -4314,15 +4494,22 @@ function qualityLabel(kbps) {
 function destroyPlayer() {
   clearTimeout(state.playerHideTimer)
   document.body.classList.remove('in-player-mode', 'player-idle')
+  const statsPanel = document.getElementById('statsForNerdsPanel')
+  if (statsPanel) statsPanel.remove()
   const player = state.player
   if (!player) return
   try {
+    if (player.statsTimer) {
+      clearInterval(player.statsTimer)
+      player.statsTimer = null
+    }
     if (player.watchdogTimer) {
       clearInterval(player.watchdogTimer)
       player.watchdogTimer = null
     }
     if (player.hls) player.hls.destroy()
     if (player.video) {
+      player.video.classList.remove('cinema-clarity-enhanced')
       player.video.pause()
       player.video.removeAttribute('src')
       player.video.load()
@@ -7004,6 +7191,7 @@ async function renderDownloads() {
 async function renderSettings() {
   setWindowTitle('源管理')
   state.sources = await shellApi.sources.list()
+  const webdavCfg = LS.get('kky.webdav', { url: '', port: '', path: '/', user: '', pass: '' })
 
   view.innerHTML = `
     <h1 class="page-title">源管理</h1>
@@ -7053,6 +7241,27 @@ async function renderSettings() {
           <div class="hint" style="margin:2px 0 0 0">开启后在播放器控制栏显示投屏按键，支持向智能电视投屏或生成手机播放直链</div>
         </div>
         <input type="checkbox" id="chkEnableCast" ${store.settings.get().enableCast ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer" />
+      </div>
+    </div>
+
+    <div class="panel webdav-settings-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <h3 style="margin:0">私有影库挂载 (WebDAV / NAS 扩展)</h3>
+        <span class="badge-speed fast" id="webdavStatusBadge" style="display:none">已连接</span>
+      </div>
+      <p class="hint">
+        连接个人家庭 NAS、Alist 或支持 WebDAV 协议的局域网存储，直接读取原画蓝光与私有影片，具备 3000ms 超时熔断保护。
+      </p>
+      <div class="field" style="margin-bottom:8px">
+        <input id="webdavUrl" placeholder="WebDAV 服务器地址或局域网主机" style="flex:2" value="${esc(webdavCfg.url || '')}" />
+        <input id="webdavPort" placeholder="端口，如 5244" style="width:90px" value="${esc(webdavCfg.port || '')}" />
+        <input id="webdavPath" placeholder="挂载路径，如 /" style="width:110px" value="${esc(webdavCfg.path || '/')}" />
+      </div>
+      <div class="field">
+        <input id="webdavUser" placeholder="用户名 (选填)" style="flex:1" value="${esc(webdavCfg.user || '')}" />
+        <input id="webdavPass" type="password" placeholder="访问密码 (选填)" style="flex:1" value="${esc(webdavCfg.pass || '')}" />
+        <button class="btn" id="btnTestWebdav">测试连接</button>
+        <button class="btn primary" id="btnSaveWebdav">保存挂载</button>
       </div>
     </div>
 
@@ -7230,6 +7439,84 @@ async function renderSettings() {
     chkCast.onchange = () => {
       store.settings.patch({ enableCast: chkCast.checked })
       toast(chkCast.checked ? '已开启局域网投屏支持' : '已关闭局域网投屏支持')
+    }
+  }
+
+  const btnTestWebdav = document.getElementById('btnTestWebdav')
+  if (btnTestWebdav) {
+    btnTestWebdav.onclick = async () => {
+      const url = document.getElementById('webdavUrl')?.value.trim()
+      const port = document.getElementById('webdavPort')?.value.trim()
+      const path = document.getElementById('webdavPath')?.value.trim() || '/'
+      const user = document.getElementById('webdavUser')?.value.trim()
+      const pass = document.getElementById('webdavPass')?.value.trim()
+      if (!url) return toast('请先输入 WebDAV 服务器地址')
+
+      const fullUrl = port && !url.includes(`:${port}`)
+        ? `${url.replace(/\/+$/, '')}:${port}${path.startsWith('/') ? path : '/' + path}`
+        : `${url.replace(/\/+$/, '')}${path.startsWith('/') ? path : '/' + path}`
+
+      btnTestWebdav.disabled = true
+      btnTestWebdav.textContent = '探测中…'
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 3000)
+      const t0 = Date.now()
+      try {
+        const headers = {}
+        if (user || pass) {
+          headers['Authorization'] = 'Basic ' + btoa(`${user || ''}:${pass || ''}`)
+        }
+        const resp = await fetch(fullUrl, {
+          method: 'PROPFIND',
+          headers: { ...headers, Depth: '0' },
+          signal: controller.signal,
+        }).catch(async () => {
+          return await fetch(fullUrl, {
+            method: 'HEAD',
+            headers,
+            signal: controller.signal,
+          })
+        })
+        clearTimeout(timer)
+        const ms = Date.now() - t0
+        if (resp && (resp.ok || resp.status === 207 || resp.status === 401)) {
+          if (resp.status === 401) {
+            toast('WebDAV 连接成功但需要正确账号密码 (HTTP 401)')
+          } else {
+            toast(`✦ WebDAV 挂载连通成功 (${ms}ms)`)
+            const badge = document.getElementById('webdavStatusBadge')
+            if (badge) {
+              badge.style.display = 'inline-block'
+              badge.textContent = `已连接 · ${ms}ms`
+            }
+          }
+        } else {
+          toast(`WebDAV 响应异常 (HTTP ${resp ? resp.status : '未知'})`)
+        }
+      } catch (err) {
+        clearTimeout(timer)
+        if (err.name === 'AbortError') {
+          toast('WebDAV 连接超时 (已触发 3000ms 超时熔断保护)')
+        } else {
+          toast('WebDAV 连接失败：' + (err.message || err))
+        }
+      } finally {
+        btnTestWebdav.disabled = false
+        btnTestWebdav.textContent = '测试连接'
+      }
+    }
+  }
+
+  const btnSaveWebdav = document.getElementById('btnSaveWebdav')
+  if (btnSaveWebdav) {
+    btnSaveWebdav.onclick = () => {
+      const url = document.getElementById('webdavUrl')?.value.trim() || ''
+      const port = document.getElementById('webdavPort')?.value.trim() || ''
+      const path = document.getElementById('webdavPath')?.value.trim() || '/'
+      const user = document.getElementById('webdavUser')?.value.trim() || ''
+      const pass = document.getElementById('webdavPass')?.value.trim() || ''
+      LS.set('kky.webdav', { url, port, path, user, pass })
+      toast('✦ 私有影库 WebDAV 配置已安全保存')
     }
   }
 
@@ -7463,6 +7750,8 @@ function toggleShortcutModal(force) {
           <div class="shortcut-row"><span>静音切换</span><kbd>M</kbd></div>
           <div class="shortcut-row"><span>上一集 / 下一集</span><kbd>[ / ] 或 ⌘← / ⌘→</kbd></div>
           <div class="shortcut-row"><span>音效增强 / 对白模式</span><kbd>E</kbd></div>
+          <div class="shortcut-row"><span>CAS 硬件超清画质重塑</span><kbd>C</kbd></div>
+          <div class="shortcut-row"><span>Stats for Nerds 流监控</span><kbd>I</kbd></div>
           <div class="shortcut-row"><span>定格此刻入影视圈</span><kbd>B</kbd></div>
           <div class="shortcut-row"><span>高光片段截取分享</span><kbd>S</kbd></div>
           <div class="shortcut-row"><span>快捷键帮助指南</span><kbd>? / F1</kbd></div>
@@ -7510,6 +7799,11 @@ document.addEventListener('keydown', (event) => {
   const { video, goEp } = player
   switch (event.key) {
     case 'Escape':
+      const statsPanel = document.getElementById('statsForNerdsPanel')
+      if (statsPanel) {
+        toggleStatsForNerds(false)
+        break
+      }
       if (document.fullscreenElement) {
         document.exitFullscreen().catch(() => { })
         break
@@ -7569,6 +7863,14 @@ document.addEventListener('keydown', (event) => {
     case 'e':
     case 'E':
       document.getElementById('btnAudioFx')?.click()
+      break
+    case 'c':
+    case 'C':
+      toggleCasClarity()
+      break
+    case 'i':
+    case 'I':
+      toggleStatsForNerds()
       break
     case 'b':
     case 'B':

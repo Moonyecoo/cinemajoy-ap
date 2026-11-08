@@ -505,5 +505,57 @@ assert(appCss.includes('.stream-feed-card') && appCss.includes('.stream-media-fr
   assert(appCss.includes('aspect-ratio: 16 / 9') && appCss.includes('aspect-ratio: 2 / 3'), '桌面卡片与海报必须严格锁定 16:9 与 2:3 黄金宽高比，杜绝画面拉伸变形')
   console.log('✓ 16:9 / 2:3 黄金视听比例与海报安全白名单闭环验证通过')
 
-  console.log('\n>>> 全部 5 大核心痛点解决方案与 27 项技术指标均已 100% 自动化验证通过! <<<')
+  console.log('\n--- 验证 28: CAS 硬件自适应锐化卷积矩阵与滤镜默认关闭门禁 (008-gpu-clarity-engine) ---')
+  const qualityMod = require('../lib/quality.js')
+  const appJsContent = fs.readFileSync(path.join(__dirname, '../src/app.js'), 'utf8')
+  const appCssContent = fs.readFileSync(path.join(__dirname, '../src/app.css'), 'utf8')
+  assert(appJsContent.includes('id="cinemajoy-cas-sharpen"') && appJsContent.includes('feConvolveMatrix'), 'src/app.js 必须挂载 cinemajoy-cas-sharpen 与 feConvolveMatrix 卷积着色器')
+  assert(appJsContent.includes('kernelMatrix="0 -0.45 0 -0.45 2.80 -0.45 0 -0.45 0"'), 'feConvolveMatrix 必须精确采用 3x3 CAS 卷积矩阵')
+  assert(appCssContent.includes('.cinema-clarity-enhanced') && appCssContent.includes('image-rendering: -webkit-optimize-contrast'), 'src/app.css 必须包含 .cinema-clarity-enhanced 样式与硬件级对比度优化')
+  assert(appCssContent.includes('url(#cinemajoy-cas-sharpen)'), 'src/app.css 必须链接 #cinemajoy-cas-sharpen 滤镜')
+  assert(appJsContent.includes('btnCas'), 'src/app.js 必须包含 btnCas 超清控制按钮')
+  assert(!appJsContent.includes('<video id="video" class="cinema-clarity-enhanced"'), '出于低配核显性能保护，CAS 超清重塑滤镜必须默认保持关闭 (Default: OFF)')
+  console.log('✓ CAS 硬件自适应锐化卷积矩阵与默认关闭门禁验证通过')
+
+  console.log('\n--- 验证 29: Stats for Nerds 真实流监控看板、1000ms 节流与定时器销毁 ---')
+  assert(appJsContent.includes('stats-for-nerds-panel') && appJsContent.includes('toggleStatsForNerds'), 'src/app.js 必须实现 Stats for Nerds 真实流监控看板')
+  assert(appJsContent.includes('sfnRes') && appJsContent.includes('sfnBitrate') && appJsContent.includes('sfnCodec'), '监控看板必须包含真实分辨率、实时测量码率与编解码器指标')
+  assert(appJsContent.includes('sfnBuffer') && appJsContent.includes('sfnDropped'), '监控看板必须包含真实缓冲池深度与硬件掉帧统计指标')
+  assert(appJsContent.includes('setInterval(updateStats, 1000)'), '监控看板必须锁定 1000ms 节流采样刷新定时器，杜绝过度渲染')
+  assert(appJsContent.includes('clearInterval(player.statsTimer)') || appJsContent.includes('clearInterval(state.player.statsTimer)'), 'destroyPlayer 必须强制销毁 statsTimer，杜绝内存泄漏')
+  assert(appJsContent.includes("case 'c':") && appJsContent.includes("case 'i':"), '全局键盘事件必须完整映射 C 键 (CAS开关) 与 I 键 (Stats for Nerds)')
+  console.log('✓ Stats for Nerds 真实流监控看板、1000ms 节流与定时器安全销毁验证通过')
+
+  console.log('\n--- 验证 30: sortLinesByRealBitrate 真实有效码率物理降序调度 ---')
+  assert(typeof qualityMod.sortLinesByRealBitrate === 'function', 'lib/quality.js 必须导出 sortLinesByRealBitrate 纯函数')
+  const testLines = [
+    { name: '低码线路', kbps: 650 },
+    { name: '原画蓝光', kbps: 3800 },
+    { name: '普通高清', kbps: 1500 },
+    { name: '超清切片', kbps: 2400 },
+  ]
+  const sortedLines = qualityMod.sortLinesByRealBitrate(testLines)
+  assert.strictEqual(sortedLines[0].name, '原画蓝光', '真实码率最高线路必须物理置顶排在第 1 位')
+  assert.strictEqual(sortedLines[sortedLines.length - 1].name, '低码线路', '最低码率线路必须排在末尾')
+  assert.strictEqual(sortedLines[1].name, '超清切片', '排序必须严格按 kbps 降序调度')
+  console.log('✓ sortLinesByRealBitrate 真实有效码率物理降序调度验证通过')
+
+  console.log('\n--- 验证 31: 出厂源配置描述纯净化与零虚假宣传 ---')
+  const sourcesRaw = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/sources.json'), 'utf8'))
+  const sourceList = Array.isArray(sourcesRaw) ? sourcesRaw : (sourcesRaw.sites || sourcesRaw.sources || [])
+  assert(sourceList.length > 0, 'data/sources.json 必须包含出厂源列表')
+  for (const src of sourceList) {
+    const note = src.note || ''
+    assert(!note.includes('2100kbps+'), `出厂源 [${src.name}] 严禁包含未经实际测量的夸张虚假码率宣称 "2100kbps+"`)
+    assert(!note.includes('1950kbps+'), `出厂源 [${src.name}] 严禁包含夸张宣传词 "1950kbps+"`)
+  }
+  console.log('✓ 出厂源配置描述纯净化与零虚假宣传验证通过')
+
+  console.log('\n--- 验证 32: 私有影库 WebDAV 挂载配置模型与 3000ms 超时熔断 ---')
+  assert(appJsContent.includes('webdav-settings-card') && appJsContent.includes('btnTestWebdav') && appJsContent.includes('btnSaveWebdav'), 'src/app.js 必须实现私有影库 WebDAV 挂载配置面板')
+  assert(appJsContent.includes('kky.webdav'), 'WebDAV 配置模型必须安全持久化至本地存储')
+  assert(appJsContent.includes('setTimeout(() => controller.abort(), 3000)'), 'WebDAV 连接探测必须具备 3000ms 超时熔断保护')
+  console.log('✓ 私有影库 WebDAV 挂载配置模型与 3000ms 超时熔断验证通过')
+
+  console.log('\n>>> 全部 5 大核心痛点与端侧 CAS 硬件画质引擎等 32 项技术指标均已 100% 自动化验证通过! <<<')
 })()

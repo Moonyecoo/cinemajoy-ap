@@ -6784,6 +6784,126 @@ body[data-route="play"] .player-page {
   color: rgba(255, 255, 255, 0.65);
 }
 
+/* ==========================================================================
+   CAS CLARITY ENGINE & STATS FOR NERDS (端侧 GPU CAS 画质重塑与真实流监控看板)
+   ========================================================================== */
+
+/* 1. GPU 对比度自适应锐化与画质增强渲染管线 */
+video.cinema-clarity-enhanced {
+  filter: url(#cinemajoy-cas-sharpen) contrast(1.08) brightness(1.02) saturate(1.05);
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* 2. 控制栏 CAS 切换胶囊按钮 */
+.ctrl.btn-cas {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.2s ease;
+}
+
+.ctrl.btn-cas.active {
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+/* 3. Stats for Nerds 真实流媒体监控看板 (OLED 磨砂极简浮层) */
+.stats-for-nerds-panel {
+  position: absolute;
+  top: 54px;
+  right: 16px;
+  width: 330px;
+  background: rgba(10, 12, 18, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 14px 16px;
+  z-index: 100;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  pointer-events: auto;
+  user-select: text;
+}
+
+.stats-for-nerds-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stats-for-nerds-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.05em;
+}
+
+.stats-for-nerds-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.stats-for-nerds-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.stats-for-nerds-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stats-for-nerds-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stats-for-nerds-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.stats-for-nerds-val {
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.stats-for-nerds-val.highlight {
+  color: #10b981;
+}
+
+.stats-for-nerds-val.warning {
+  color: #f59e0b;
+}
+
+/* 4. 私有影库 WebDAV 设置卡片 */
+.webdav-settings-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-top: 14px;
+}
+
 
 
 

@@ -7,7 +7,7 @@
       "api": "https://www.huyaapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "2100kbps+ 1080P 高码率原画 · 极速专线直连免VPN",
+      "note": "综合影视与剧集切片 · 极速专线直连免VPN",
       "builtin": true
     },
     {
@@ -16,7 +16,7 @@
       "api": "http://api.guangsuapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "2100kbps+ 蓝光原画 · 300ms极速直连免VPN",
+      "note": "热播院线切片 · 300ms极速直连免VPN",
       "builtin": true
     },
     {
@@ -25,7 +25,7 @@
       "api": "https://jyzyapi.com/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "2100kbps+ 院线高码率 · 极速直连免VPN",
+      "note": "院线热映切片 · 极速直连免VPN",
       "builtin": true
     },
     {
@@ -34,7 +34,7 @@
       "api": "https://subocaiji.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "1950kbps+ 1080P高画质 · 双路并发直连免VPN",
+      "note": "综合影视大库 · 双路并发直连免VPN",
       "builtin": true
     },
     {
@@ -43,7 +43,7 @@
       "api": "http://cj.ffzyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "1850kbps+ 9.8万全网大库 · 骨干专线直连免VPN",
+      "note": "9.8万全网大库 · 骨干专线直连免VPN",
       "builtin": true
     },
     {
@@ -52,7 +52,7 @@
       "api": "https://jszyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "1620kbps+ 全网秒开极速切片 · 高清首发免VPN",
+      "note": "全网秒开切片 · 影视首发免VPN",
       "builtin": true
     },
     {
@@ -61,7 +61,7 @@
       "api": "https://ikunzyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "1600kbps+ 1080P高清影视与番剧 · 直连免VPN",
+      "note": "综合影视与番剧 · 直连免VPN",
       "builtin": true
     },
     {
@@ -70,7 +70,7 @@
       "api": "https://www.hongniuzy2.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "蓝光画质专区 · 稳定不卡直连免VPN",
+      "note": "蓝光专区 · 稳定不卡直连免VPN",
       "builtin": true
     },
     {
@@ -79,7 +79,7 @@
       "api": "https://hhzyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "院线同步上映 · 独家高清直连免VPN",
+      "note": "院线同步上映 · 独家直连免VPN",
       "builtin": true
     },
     {
@@ -88,7 +88,7 @@
       "api": "http://bfzyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "全网热门影视与电影解说专库 · 蓝光秒播",
+      "note": "全网热门影视与电影解说专库 · 秒播",
       "builtin": true
     },
     {
@@ -106,7 +106,7 @@
       "api": "https://suoniapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "4K/1080P超清原画与影视解说 · CDN直连",
+      "note": "超清切片与影视解说 · CDN直连",
       "builtin": true
     },
     {
@@ -115,7 +115,7 @@
       "api": "https://sdzyapi.com/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "2400kbps+ 高码率节点 · 秒级缓冲直连",
+      "note": "快速响应节点 · 秒级缓冲直连",
       "builtin": true
     },
     {
@@ -133,7 +133,7 @@
       "api": "https://caiji.moduapi.cc/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "2000kbps+ 新番日更与高码率院线库",
+      "note": "新番日更与院线库 · 直连免VPN",
       "builtin": true
     },
     {
@@ -142,7 +142,7 @@
       "api": "https://cj.yayazy.net/api.php/provide/vod/",
       "type": 1,
       "enabled": true,
-      "note": "1900kbps+ 热剧与影视解说追更专线",
+      "note": "热剧与影视解说追更专线",
       "builtin": true
     },
     {
