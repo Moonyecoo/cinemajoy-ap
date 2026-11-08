@@ -7265,6 +7265,22 @@ async function renderSettings() {
       </div>
     </div>
 
+    <div class="panel cloud-share-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <h3 style="margin:0">网盘分享订阅与 24 小时 RSS 自动追更</h3>
+        <span class="badge-speed fast" style="font-size:11px">免登录 · 0流量巡检</span>
+      </div>
+      <p class="hint">
+        粘贴网盘公开分享链接（如 <code>https://pan.quark.cn/s/…</code>），一键智能去噪解析全集，24 小时自动增量比对追更并支持导出 W3C RSS 2.0 订阅源。
+      </p>
+      <div class="field" style="margin-bottom:8px">
+        <input id="cloudShareUrl" placeholder="https://pan.quark.cn/s/… 或纯分享短码" style="flex:2" />
+        <input id="cloudSharePass" placeholder="提取码 (选填)" style="width:110px" />
+        <button class="btn primary" id="btnParseCloudShare">一键解析订阅</button>
+      </div>
+      <div class="cloud-share-list" id="cloudShareList"></div>
+    </div>
+
     <div class="panel">
       <h3>关于</h3>
       <p class="hint" id="aboutText">影悦 · 独立版</p>
@@ -7517,6 +7533,141 @@ async function renderSettings() {
       const pass = document.getElementById('webdavPass')?.value.trim() || ''
       LS.set('kky.webdav', { url, port, path, user, pass })
       toast('✦ 私有影库 WebDAV 配置已安全保存')
+    }
+  }
+
+  const renderCloudShares = () => {
+    const listEl = document.getElementById('cloudShareList')
+    if (!listEl) return
+    const shares = LS.get('kky.cloud_shares', [])
+    if (!shares || shares.length === 0) {
+      listEl.innerHTML = '<div class="hint" style="text-align:center;padding:12px 0">暂无网盘分享订阅，输入上方链接即可一键解析追更</div>'
+      return
+    }
+
+    listEl.innerHTML = shares
+      .map((s, idx) => {
+        const fileCount = Array.isArray(s.files) ? s.files.length : 0
+        const timeStr = s.updatedAt ? new Date(s.updatedAt).toLocaleTimeString() : '刚刚'
+        return `
+        <div class="cloud-share-item">
+          <div class="cloud-share-meta">
+            <div class="cloud-share-title">${esc(s.title || '网盘高清影视资源')} <span style="font-size:11px;color:rgba(255,255,255,0.4);font-weight:normal">(${fileCount} 集)</span></div>
+            <div class="cloud-share-subtitle">${esc(s.shareUrl || '')} · 更新于 ${timeStr}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn small" data-cs-rss="${idx}">复制 RSS</button>
+            <button class="btn small" data-cs-refresh="${idx}">刷新</button>
+            <button class="btn small danger" data-cs-del="${idx}">删除</button>
+          </div>
+        </div>
+      `
+      })
+      .join('')
+
+    listEl.querySelectorAll('[data-cs-rss]').forEach((btn) => {
+      btn.onclick = async () => {
+        const idx = parseInt(btn.dataset.csRss, 10)
+        const target = shares[idx]
+        if (!target) return
+        try {
+          const res = await shellApi.cloudshare.exportRss({
+            title: target.title,
+            link: target.shareUrl,
+            files: target.files,
+            updatedAt: target.updatedAt,
+          })
+          if (res && res.ok && res.xml) {
+            await shellApi.media.copy(res.xml)
+            toast('✦ W3C 标准 RSS 2.0 订阅已复制到剪贴板')
+          } else {
+            toast('导出 RSS 失败：' + (res?.error || '未知错误'))
+          }
+        } catch (e) {
+          toast('导出异常：' + (e.message || e))
+        }
+      }
+    })
+
+    listEl.querySelectorAll('[data-cs-refresh]').forEach((btn) => {
+      btn.onclick = async () => {
+        const idx = parseInt(btn.dataset.csRefresh, 10)
+        const target = shares[idx]
+        if (!target) return
+        btn.disabled = true
+        btn.textContent = '刷新中…'
+        try {
+          const res = await shellApi.cloudshare.resolveShare(target.shareUrl, target.passcode)
+          if (res && res.ok) {
+            shares[idx] = { ...target, ...res }
+            LS.set('kky.cloud_shares', shares)
+            renderCloudShares()
+            toast(`✦ 追更完成，共获取 ${res.files.length} 集`)
+          } else {
+            toast('刷新失败：' + (res?.message || res?.error || '网络超时'))
+          }
+        } catch (e) {
+          toast('刷新失败：' + (e.message || e))
+        } finally {
+          btn.disabled = false
+          btn.textContent = '刷新'
+        }
+      }
+    })
+
+    listEl.querySelectorAll('[data-cs-del]').forEach((btn) => {
+      btn.onclick = async () => {
+        const idx = parseInt(btn.dataset.csDel, 10)
+        const ok = await shellApi.dialog.confirm({
+          title: '删除网盘订阅',
+          message: '确定移除此网盘订阅吗？这不会影响网盘内的实际文件。',
+        })
+        if (!ok) return
+        shares.splice(idx, 1)
+        LS.set('kky.cloud_shares', shares)
+        renderCloudShares()
+        toast('已移除网盘订阅')
+      }
+    })
+  }
+
+  renderCloudShares()
+
+  const btnParseShare = document.getElementById('btnParseCloudShare')
+  if (btnParseShare) {
+    btnParseShare.onclick = async () => {
+      const urlInput = document.getElementById('cloudShareUrl')
+      const passInput = document.getElementById('cloudSharePass')
+      const url = urlInput?.value.trim()
+      const passcode = passInput?.value.trim()
+      if (!url) return toast('请先输入网盘分享链接')
+
+      btnParseShare.disabled = true
+      btnParseShare.textContent = '解析中…'
+      try {
+        const res = await shellApi.cloudshare.resolveShare(url, passcode)
+        if (res && res.ok) {
+          const shares = LS.get('kky.cloud_shares', [])
+          const existIdx = shares.findIndex((s) => s.pwdId === res.pwdId)
+          if (existIdx >= 0) {
+            shares[existIdx] = { ...shares[existIdx], ...res }
+          } else {
+            shares.unshift(res)
+          }
+          LS.set('kky.cloud_shares', shares)
+          if (urlInput) urlInput.value = ''
+          if (passInput) passInput.value = ''
+          renderCloudShares()
+          toast(`✦ 成功解析「${res.title}」，共 ${res.files.length} 集`)
+        } else {
+          toast('解析失败：' + (res?.message || res?.error || '网络超时或链接无效'))
+        }
+      } catch (e) {
+        toast('解析失败：' + (e.message || e))
+      } finally {
+        btnParseShare.disabled = false
+        btnParseShare.textContent = '一键解析订阅'
+      }
     }
   }
 

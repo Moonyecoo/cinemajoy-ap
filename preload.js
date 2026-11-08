@@ -96,6 +96,11 @@ contextBridge.exposeInMainWorld('kky', {
     decodeToken: (token) => ipcRenderer.invoke('circles:decodeToken', token),
   },
 
+  cloudshare: {
+    resolveShare: (url, passcode) => ipcRenderer.invoke('cloudshare:resolve', { url, passcode }),
+    exportRss: (payload) => ipcRenderer.invoke('cloudshare:exportRss', payload),
+  },
+
   on: (channel, handler) => {
     if (!ON_CHANNELS.has(channel)) return () => {}
     const listener = (_event, payload) => handler(payload)

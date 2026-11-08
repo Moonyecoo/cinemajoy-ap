@@ -6904,6 +6904,55 @@ video.cinema-clarity-enhanced {
   margin-top: 14px;
 }
 
+/* 5. 网盘分享无感解析与 24 小时 RSS 自动追更卡片 */
+.cloud-share-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-top: 14px;
+}
+
+.cloud-share-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cloud-share-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+.cloud-share-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cloud-share-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cloud-share-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.cloud-share-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 
 
 

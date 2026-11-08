@@ -37,7 +37,10 @@
     "www.w3.org",
     "schemas.xmlsoap.org",
     "purl.org",
-    "aomedia.org"
+    "aomedia.org",
+    "quark.cn",
+    "drive.quark.cn",
+    "pan.quark.cn"
   ],
   "forbiddenDomains": [
     "huggingface.co",

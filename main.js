@@ -16,6 +16,7 @@ const http = require('node:http')
 const https = require('node:https')
 const dnsModule = require('./lib/dns')
 const circles = require('./lib/circles')
+const cloudshare = require('./lib/cloudshare')
 
 // 注册国内防污染海报图床代理私有协议
 protocol.registerSchemesAsPrivileged([
@@ -686,6 +687,40 @@ function registerIpc() {
   ipcMain.handle('circles:avatars', () => circles.AVATAR_OPTIONS)
   ipcMain.handle('circles:encodeToken', (_e, circle) => circles.encodeCircleToken(circle))
   ipcMain.handle('circles:decodeToken', (_e, token) => circles.decodeCircleToken(token))
+
+  ipcMain.handle('cloudshare:resolve', async (_e, { url, passcode } = {}) => {
+    try {
+      const parsed = cloudshare.parseShareUrl(url)
+      const pwdId = parsed.pwdId
+      const finalPasscode = passcode || parsed.passcode || ''
+      if (!pwdId) {
+        return { ok: false, error: 'INVALID_URL', message: '未能识别有效的网盘分享链接' }
+      }
+      const tokenRes = await cloudshare.fetchShareToken(pwdId, finalPasscode)
+      if (!tokenRes.ok) return tokenRes
+      const filesRes = await cloudshare.fetchShareFiles(pwdId, tokenRes.stoken)
+      return {
+        ok: true,
+        pwdId,
+        passcode: finalPasscode,
+        title: tokenRes.title || '网盘高清影视',
+        shareUrl: `https://pan.quark.cn/s/${pwdId}`,
+        files: filesRes.ok ? filesRes.files : [],
+        updatedAt: Date.now(),
+      }
+    } catch (err) {
+      return { ok: false, error: err.message || 'RESOLVE_ERROR' }
+    }
+  })
+
+  ipcMain.handle('cloudshare:exportRss', (_e, payload) => {
+    try {
+      const xml = cloudshare.exportToRssFeed(payload || {})
+      return { ok: true, xml }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
 
   ipcMain.handle('dialog:confirm', async (_e, { title, message }) => {
     const result = await dialog.showMessageBox(mainWindow, {

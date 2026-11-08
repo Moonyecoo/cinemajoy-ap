@@ -557,5 +557,54 @@ assert(appCss.includes('.stream-feed-card') && appCss.includes('.stream-media-fr
   assert(appJsContent.includes('setTimeout(() => controller.abort(), 3000)'), 'WebDAV 连接探测必须具备 3000ms 超时熔断保护')
   console.log('✓ 私有影库 WebDAV 挂载配置模型与 3000ms 超时熔断验证通过')
 
-  console.log('\n>>> 全部 5 大核心痛点与端侧 CAS 硬件画质引擎等 32 项技术指标均已 100% 自动化验证通过! <<<')
+  console.log('\n--- 验证 33: 网盘公开分享 URL 规范化提取 (009-cloud-share-rss-engine) ---')
+  const csMod = require('../lib/cloudshare.js')
+  const parsed1 = csMod.parseShareUrl('https://pan.quark.cn/s/8a8b8c8d')
+  assert.strictEqual(parsed1.pwdId, '8a8b8c8d', '分享链接提取 pwdId 失败')
+  const parsed2 = csMod.parseShareUrl('https://pan.quark.cn/s/abcd1234efgh?pwd=5678')
+  assert.strictEqual(parsed2.pwdId, 'abcd1234efgh')
+  assert.strictEqual(parsed2.passcode, '5678', '提取码参数提取失败')
+  console.log('✓ 网盘公开分享 URL 规范化提取验证通过')
+
+  console.log('\n--- 验证 34: 工业级文件名去噪与剧集归一化 ---')
+  const cleanEp1 = csMod.cleanEpisodeTitle('【关注公众号看全集】庆余年2.2024.4K.S02E05.mp4')
+  assert.strictEqual(cleanEp1.epName, '第05集', '营销号与压制组去噪提取集数失败')
+  assert.strictEqual(cleanEp1.isVideo, true)
+  const cleanEp2 = csMod.cleanEpisodeTitle('三体.EP12.1080P.H265.mkv')
+  assert.strictEqual(cleanEp2.epName, '第12集')
+  const cleanEp3 = csMod.cleanEpisodeTitle('宣传花絮.txt')
+  assert.strictEqual(cleanEp3.isVideo, false, '非视频扩展名未正确过滤')
+  console.log('✓ 工业级文件名去噪与剧集归一化验证通过')
+
+  console.log('\n--- 验证 35: 24 小时增量差异比对与 O(N) Set 哈希算法 ---')
+  const cachedList = [{ fid: '1', name: 'ep1.mp4' }]
+  const latestList = [{ fid: '1', name: 'ep1.mp4' }, { fid: '2', name: 'ep2.mp4' }]
+  const diffList = csMod.diffShareUpdates(cachedList, latestList)
+  assert.strictEqual(diffList.length, 1, '增量更新集数计算错误')
+  assert.strictEqual(diffList[0].fid, '2', '增量更新集数 fid 错误')
+  console.log('✓ 增量差异比对与 O(N) Set 哈希算法验证通过')
+
+  console.log('\n--- 验证 36: W3C RSS 2.0 XML 结构与时间戳规范 ---')
+  const xmlOutput = csMod.exportToRssFeed({
+    title: '测试剧集追更',
+    link: 'https://pan.quark.cn/s/test1234',
+    files: [{ fid: '101', name: '第01集.mp4', epName: '第01集', size: 1048576 }],
+    updatedAt: 1731000000000,
+  })
+  assert(xmlOutput.includes('<rss version="2.0">'), '必须包含标准 RSS 2.0 根节点')
+  assert(xmlOutput.includes('<channel>'), '必须包含 channel 节点')
+  assert(xmlOutput.includes('<title>测试剧集追更 - 影悦 · 独立版</title>'), 'RSS 标题必须规范包含品牌')
+  assert(xmlOutput.includes('<item>'), '必须包含 item 剧集节点')
+  assert(xmlOutput.includes('<enclosure url="https://pan.quark.cn/s/test1234" length="1048576" type="video/mp4" />'), '必须包含标准的 enclosure 流媒体媒体标记')
+  console.log('✓ W3C RSS 2.0 XML 结构与时间戳规范验证通过')
+
+  console.log('\n--- 验证 37: 3000ms 超时熔断保护与生命周期销毁门禁 ---')
+  assert.strictEqual(csMod.TIMEOUT_MS, 3000, '必须严格锁定 3000ms 超时熔断')
+  assert(typeof csMod.clearWatcher === 'function' || typeof csMod.destroy === 'function', '必须导出定时器生命周期销毁函数')
+  const failRes = await csMod.fetchShareToken('invalid_pwd_not_exist_9999')
+  assert.strictEqual(failRes.ok, false, '无效分享必须优雅失败')
+  assert(failRes.error, '失败响应必须包含统一自愈 error 描述')
+  console.log('✓ 3000ms 超时熔断保护与生命周期销毁门禁验证通过')
+
+  console.log('\n>>> 全部 5 大核心痛点与网盘分享 24 小时 RSS 追更引擎等 37 项技术指标均已 100% 自动化验证通过! <<<')
 })()
