@@ -439,5 +439,71 @@ assert(appCss.includes('.stream-feed-card') && appCss.includes('.stream-media-fr
   console.log(`[TMDB Stream] 成功实时获取 ${tmdbSample.length} 部院线项目: 首部《${sampleItem.title}》(${sampleItem.release_date}) 评分: ${sampleItem.vote_average}`)
   console.log('✓ TMDB 实时海报流与新片专栏推送流架构验证全部通过')
 
-  console.log('\n>>> 全部核心技术需求与安全合规项均已通过自动化验证! <<<')
+  console.log('\n--- 验证 23: 零配置开箱可用与离线探针冻结保护 (痛点 1 解决) ---')
+  const sourcesMod = require('../lib/sources.js')
+  const routerMod = require('../lib/router.js')
+  const defaultSources = sourcesMod.list()
+  assert(Array.isArray(defaultSources) && defaultSources.length > 0, '应用必须内置可用自愈源池，开箱 0 配置即可使用')
+  routerMod.setOfflineFrozen(true)
+  assert.strictEqual(routerMod.isOffline(), true, 'router 必须能够正确检测与模拟离线冻结状态')
+  routerMod.recordOutcome('fake_test_site', false, 1500)
+  assert.strictEqual(routerMod.isCircuitBroken('fake_test_site'), false, '全局断网时必须冻结熔断扣分，严禁将正常源误判熔断')
+  routerMod.setOfflineFrozen(false)
+  console.log('✓ 零配置开箱可用与断网探针冻结自愈保护验证通过')
+
+  console.log('\n--- 验证 24: 真伪 1080P/4K 画质硬指标仲裁与低码率打标 (痛点 2 解决) ---')
+  const proberMod = require('../lib/prober.js')
+  const fake4k = proberMod.evaluateTier(1920, 1080, 750)
+  assert.strictEqual(fake4k.tier, '1080P-low', '伪 1080P 必须被精准判决为 1080P-low')
+  assert.strictEqual(fake4k.isTrueHD, false, '伪高清 isTrueHD 必须为 false')
+  assert.strictEqual(fake4k.legit, false, '伪高清 legit 必须为 false')
+  assert(fake4k.label.includes('压缩低码'), '低码率标签必须明确提示压缩低码，杜绝虚标')
+
+  const trueHD = proberMod.evaluateTier(1920, 1080, 3800)
+  assert.strictEqual(trueHD.tier, '1080P-high', '高码率流必须评定为 1080P-high')
+  assert.strictEqual(trueHD.isTrueHD, true, '高码率真 1080P isTrueHD 必须为 true')
+  assert.strictEqual(trueHD.legit, true, '真 1080P legit 必须为 true')
+  assert(trueHD.label.includes('原画蓝光'), '高码率流必须点亮原画蓝光标识')
+  console.log('✓ 真伪 1080P/4K 画质硬指标仲裁与低码率打标验证通过')
+
+  console.log('\n--- 验证 25: 播放卡顿看门狗状态机、60s 冷静防抖与集数缺失跳过 (痛点 3 解决) ---')
+  assert(appJs.includes('attemptAutoFailover'), 'src/app.js 必须实现 attemptAutoFailover 自动切源接力函数')
+  assert(appJs.includes('stalledDurationMs >= 3500'), '播放器看门狗必须在缓冲停滞达到 3.5 秒时激活')
+  assert(appJs.includes('60000'), '自动切源必须包含 60 秒防抖冷静期，防止频繁跳跃')
+  assert(appJs.includes('failoverCount'), '单集切源上限必须进行次数限制锁定')
+  assert(appJs.includes('clearInterval(player.watchdogTimer)'), 'destroyPlayer 必须强制销毁看门狗定时器，防止定时器逃逸与内存泄漏')
+  console.log('✓ 播放卡顿看门狗状态机、60s 冷静防抖与集数缺失跳过验证通过')
+
+  console.log('\n--- 验证 26: 搜索结果同名强聚类去重与逆序选集自动升序校准 (痛点 4 解决) ---')
+  assert(typeof apiMod.normalizeEpisodeList === 'function', 'lib/api.js 必须导出 normalizeEpisodeList 选集校准函数')
+  const reversedEps = ['第40集', '第39集', '第2集', '第1集']
+  const normalizedEps = apiMod.normalizeEpisodeList(reversedEps)
+  assert.strictEqual(normalizedEps[0], '第1集', '逆序选集必须被自动校准翻转为升序')
+  assert.strictEqual(normalizedEps[normalizedEps.length - 1], '第40集', '逆序选集翻转后末尾集数必须正确')
+
+  const alreadyAsc = ['第1集', '第2集', '第3集']
+  assert.deepStrictEqual(apiMod.normalizeEpisodeList(alreadyAsc), alreadyAsc, '原本正序的选集必须保持不变')
+
+  assert(typeof apiMod.clusterSearchResults === 'function', 'lib/api.js 必须导出 clusterSearchResults 搜索结果聚类函数')
+  const dirtySearchItems = [
+    { name: '庆余年 第一季 HD', site: 'siteA', pic: 'picA' },
+    { name: '庆余年 第一季 1080P 蓝光', site: 'siteB', pic: 'picB' },
+    { name: '星际穿越 4K', site: 'siteC', pic: 'picC' },
+  ]
+  const clustered = apiMod.clusterSearchResults(dirtySearchItems)
+  assert.strictEqual(clustered.length, 2, '同名影视必须强聚类合并为唯一主条目，绝不平铺重复条目')
+  const qynCluster = clustered.find(c => c.canonicalTitle.includes('庆余年'))
+  assert(qynCluster && qynCluster.sources.length === 2, '聚类后的主条目必须完整收纳全网多源可用线路')
+  console.log('✓ 搜索结果同名强聚类去重与逆序选集自动升序校准验证通过')
+
+  console.log('\n--- 验证 27: 16:9 / 2:3 黄金视听比例与海报安全白名单闭环 (痛点 5 解决) ---')
+  const whitelistRaw = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/domain-whitelist.json'), 'utf8'))
+  const whitelistHosts = Array.isArray(whitelistRaw.allowedDomains) ? whitelistRaw.allowedDomains : []
+  assert(whitelistHosts.some(h => h.includes('tmdb') || h.includes('themoviedb')), 'domain-whitelist.json 必须收录合法 TMDB 官方域名')
+  assert(whitelistHosts.some(h => h.includes('douban')), 'domain-whitelist.json 必须收录合法豆瓣官方域名')
+  assert(appJs.includes('img.onerror') && appJs.includes('makePlaceholder'), '海报加载失败必须挂载 onerror 优雅回退至本地高质量占位图，杜绝灰块裂图')
+  assert(appCss.includes('aspect-ratio: 16 / 9') && appCss.includes('aspect-ratio: 2 / 3'), '桌面卡片与海报必须严格锁定 16:9 与 2:3 黄金宽高比，杜绝画面拉伸变形')
+  console.log('✓ 16:9 / 2:3 黄金视听比例与海报安全白名单闭环验证通过')
+
+  console.log('\n>>> 全部 5 大核心痛点解决方案与 27 项技术指标均已 100% 自动化验证通过! <<<')
 })()

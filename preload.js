@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('kky', {
     add: (payload) => ipcRenderer.invoke('sources:add', payload),
     remove: (key) => ipcRenderer.invoke('sources:remove', key),
     toggle: (key, enabled) => ipcRenderer.invoke('sources:toggle', { key, enabled }),
+    importSourceConfig: (target) => ipcRenderer.invoke('sources:import', target),
     importTvbox: (target) => ipcRenderer.invoke('sources:import', target),
     test: (key) => ipcRenderer.invoke('sources:test', key),
   },

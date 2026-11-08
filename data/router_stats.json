@@ -1,19 +1,19 @@
 {
   "site_a": {
-    "alpha": 49.999931223797304,
-    "beta": 0.0000014633234608344496,
+    "alpha": 49.99995849598741,
+    "beta": 8.830640968715813e-7,
     "latencyEma": 122,
-    "lastTested": 1794038426568,
+    "lastTested": 1794138080001,
     "consecutiveFailures": 0,
     "circuitBreakUntil": 0
   },
   "site_b": {
-    "alpha": 0.000004389970382503347,
-    "beta": 49.99992829715038,
+    "alpha": 0.0000026491922906147415,
+    "beta": 49.999956729859214,
     "latencyEma": 400,
-    "lastTested": 1794038426569,
-    "consecutiveFailures": 185,
-    "circuitBreakUntil": 1794038726569
+    "lastTested": 1794138080002,
+    "consecutiveFailures": 210,
+    "circuitBreakUntil": 1794138380002
   },
   "ry": {
     "alpha": 17.526210687509206,
@@ -245,10 +245,10 @@
     "circuitBreakUntil": 0
   },
   "good_site": {
-    "alpha": 45.30245999964311,
-    "beta": 0.09994765958206091,
+    "alpha": 46.53054209729552,
+    "beta": 0.07381825324903105,
     "latencyEma": 152,
-    "lastTested": 1794038424791,
+    "lastTested": 1794138078206,
     "consecutiveFailures": 0,
     "circuitBreakUntil": 0
   },
@@ -350,17 +350,17 @@
   },
   "probe_test_1": {
     "alpha": 3,
-    "beta": 11.090379364488335,
+    "beta": 12.426804631962572,
     "latencyEma": 400,
-    "lastTested": 1794038424817,
+    "lastTested": 1794138078231,
     "consecutiveFailures": 0,
     "circuitBreakUntil": 0
   },
   "probe_test_2": {
     "alpha": 3,
-    "beta": 11.090379364488335,
+    "beta": 12.426804631962572,
     "latencyEma": 400,
-    "lastTested": 1794038424817,
+    "lastTested": 1794138078231,
     "consecutiveFailures": 0,
     "circuitBreakUntil": 0
   },
@@ -1003,5 +1003,125 @@
     "lastTested": 1794038425401,
     "consecutiveFailures": 4,
     "circuitBreakUntil": 1794038725401
+  },
+  "test_broken_site_1794061665167": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794061665169,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794061665195": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794061665790,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794061965790
+  },
+  "broken_site_b_1794061665195": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794061665790,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794061965790
+  },
+  "test_broken_site_1794061717978": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794061717979,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794061718002": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794061718596,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794062018596
+  },
+  "broken_site_b_1794061718002": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794061718596,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794062018596
+  },
+  "test_broken_site_1794137376964": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794137376967,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794137377021": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794137377645,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794137677645
+  },
+  "broken_site_b_1794137377021": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794137377646,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794137677646
+  },
+  "test_broken_site_1794138054687": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794138054690,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794138054714": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794138055335,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794138355335
+  },
+  "broken_site_b_1794138054714": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794138055336,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794138355336
+  },
+  "test_broken_site_1794138078205": {
+    "alpha": 3.7671044799999995,
+    "beta": 3.80396016,
+    "latencyEma": 360,
+    "lastTested": 1794138078207,
+    "consecutiveFailures": 0,
+    "circuitBreakUntil": 0
+  },
+  "broken_site_a_1794138078232": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794138078816,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794138378816
+  },
+  "broken_site_b_1794138078232": {
+    "alpha": 2.7671044799999995,
+    "beta": 4.80396016,
+    "latencyEma": 400,
+    "lastTested": 1794138078816,
+    "consecutiveFailures": 4,
+    "circuitBreakUntil": 1794138378816
   }
 }

@@ -556,6 +556,10 @@ async function hydratePendingPosters(container = document) {
             img.onload = () => {
               img.classList.add('poster-fadein')
             }
+            img.onerror = () => {
+              img.onerror = null
+              img.src = makePlaceholder(title)
+            }
             img.src = poster
             img.removeAttribute('data-pending-title')
             img.removeAttribute('data-pending-year')
@@ -3234,6 +3238,107 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
     }).catch(() => { })
   }
 
+  // 智能播放看门狗 (Auto-Failover Relay)
+  let stalledDurationMs = 0
+  let isRelaying = false
+
+  const attemptAutoFailover = async (reason = '卡顿重试') => {
+    if (isRelaying) return
+    const curPlayer = state.player
+    const now = Date.now()
+    if (!curPlayer) return
+
+    // 1. 防抖门禁：切源冷静期 60s，且单集最多自动切换 2 次
+    if (now - (curPlayer.lastFailoverAt || 0) < 60000) return
+    if ((curPlayer.failoverCount || 0) >= 2) return
+
+    isRelaying = true
+    curPlayer.lastFailoverAt = now
+    curPlayer.failoverCount = (curPlayer.failoverCount || 0) + 1
+
+    const curTime = video ? video.currentTime || 0 : 0
+    toast(`✦ 智能看门狗：捕获到${reason}，正在并发探寻可用线路无感接力…`)
+
+    try {
+      const apiObj = window.kky?.api || window.shellApi?.api
+      if (apiObj && typeof apiObj.findPlayable === 'function') {
+        const found = await apiObj.findPlayable({
+          title: detail.name,
+          epIdx,
+          currentSite: detail.site,
+        })
+        if (found && found.url) {
+          // 备用源若缺少当前集数跳过
+          if (found.epIdx !== epIdx && detail.lines[lineIdx]?.episodes?.length > 1) {
+            console.log('[watchdog] 备用源集数不匹配，取消自动切源')
+            isRelaying = false
+            return
+          }
+
+          // 2. 安全销毁旧 HLS 实例，释放解码缓冲区
+          if (hls) {
+            try { hls.destroy() } catch (_) {}
+            hls = null
+          }
+
+          // 3. 构建新 HLS 实例，严格锁定低配缓冲区参数
+          if (window.Hls && window.Hls.isSupported() && /\.m3u8/i.test(found.url)) {
+            const newHls = new window.Hls({
+              maxBufferLength: 30,
+              maxMaxBufferLength: 60,
+              backBufferLength: 10,
+              maxBufferSize: 30 * 1000 * 1000,
+              startFragPrefetch: true,
+              progressive: true,
+              enableWorker: true,
+              lowLatencyMode: false,
+            })
+            hls = newHls
+            if (state.player) state.player.hls = newHls
+            newHls.loadSource(found.url)
+            newHls.attachMedia(video)
+            newHls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+              if (curTime > 2) video.currentTime = curTime
+              video.play().catch(() => {})
+              toast(`✦ 智能接力成功：已无感切至「${found.siteName || '极速线路'}」并恢复播放`)
+              isRelaying = false
+            })
+            newHls.on(window.Hls.Events.ERROR, () => {
+              isRelaying = false
+            })
+          } else {
+            video.src = found.url
+            if (curTime > 2) video.currentTime = curTime
+            video.play().catch(() => {})
+            toast(`✦ 智能接力成功：已无感切至「${found.siteName || '极速线路'}」`)
+            isRelaying = false
+          }
+          return
+        }
+      }
+    } catch (e) {
+      console.warn('[watchdog error]', e)
+    }
+    isRelaying = false
+  }
+
+  // 监听卡顿事件
+  const watchdogTimer = setInterval(() => {
+    if (!video) return
+    if (!video.paused && !video.ended && video.readyState < 3) {
+      stalledDurationMs += 1000
+      if (stalledDurationMs >= 3500) {
+        attemptAutoFailover('缓冲停滞')
+        stalledDurationMs = 0
+      }
+    } else {
+      stalledDurationMs = 0
+    }
+  }, 1000)
+
+  video.addEventListener('playing', () => { stalledDurationMs = 0 })
+  video.addEventListener('timeupdate', () => { stalledDurationMs = 0 })
+
   if (isHls && window.Hls && window.Hls.isSupported()) {
     hls = new window.Hls({
       maxBufferLength: 30,
@@ -3260,12 +3365,12 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
         return
       }
       if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) {
+        attemptAutoFailover('网络异常')
         showMsg(`<div class="spinner"></div><span>分片加载失败，正在重试…</span>`)
-        // 重试要是成功了，画面其实已经在走，别让这条提示一直挂着
         setTimeout(() => {
           if (video.readyState >= 2) clearStage()
         }, 3000)
-        setTimeout(() => hls.startLoad(), 1500)
+        setTimeout(() => hls && hls.startLoad(), 1500)
       } else if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR) {
         hls.recoverMediaError()
       } else {
@@ -3454,7 +3559,7 @@ function mountPlayer({ detail, line, ep, lineIdx, epIdx, kind, startAt }) {
     }
   })
 
-  state.player = { video, hls, detail, line, lineIdx, epIdx, ep, goEp }
+  state.player = { video, hls, detail, line, lineIdx, epIdx, ep, goEp, watchdogTimer, lastFailoverAt: 0, failoverCount: 0 }
 }
 
 /**
@@ -4212,6 +4317,10 @@ function destroyPlayer() {
   const player = state.player
   if (!player) return
   try {
+    if (player.watchdogTimer) {
+      clearInterval(player.watchdogTimer)
+      player.watchdogTimer = null
+    }
     if (player.hls) player.hls.destroy()
     if (player.video) {
       player.video.pause()
