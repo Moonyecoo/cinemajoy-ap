@@ -226,3 +226,4 @@ ${analysis.rejected.map(p => `| ${p.title} | ${p.targetPersona} | **${p.oppScore
 
 fs.writeFileSync(reportPath, reportContent, 'utf8')
 console.log(`✓ 调研报告已生成至: ${reportPath}`)
+
