@@ -101,6 +101,12 @@ contextBridge.exposeInMainWorld('kky', {
     exportRss: (payload) => ipcRenderer.invoke('cloudshare:exportRss', payload),
   },
 
+  telegram: {
+    crawl: (payload) => ipcRenderer.invoke('telegram:crawl', payload),
+    exportRss: (payload) => ipcRenderer.invoke('telegram:exportRss', payload),
+    toggleDailyCrawler: (payload) => ipcRenderer.invoke('telegram:toggleDailyCrawler', payload),
+  },
+
   on: (channel, handler) => {
     if (!ON_CHANNELS.has(channel)) return () => {}
     const listener = (_event, payload) => handler(payload)

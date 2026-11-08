@@ -606,5 +606,79 @@ assert(appCss.includes('.stream-feed-card') && appCss.includes('.stream-media-fr
   assert(failRes.error, '失败响应必须包含统一自愈 error 描述')
   console.log('✓ 3000ms 超时熔断保护与生命周期销毁门禁验证通过')
 
-  console.log('\n>>> 全部 5 大核心痛点与网盘分享 24 小时 RSS 追更引擎等 37 项技术指标均已 100% 自动化验证通过! <<<')
+  console.log('\n--- 验证 38: Telegram HTML 消息 DOM 解析与网盘链接抽取 (010-telegram-cloud-rss-crawler) ---')
+  const tgMod = require('../lib/telegram_crawler.js')
+  const mockHtml = `
+    <div class="tgme_widget_message_wrap">
+      <div class="tgme_widget_message" data-post="test_ch/101">
+        <div class="tgme_widget_message_text">【今日热播】庆余年 第二季 4K 原画 https://pan.quark.cn/s/abcd9988 提取码: 7788</div>
+        <time datetime="2026-11-08T12:00:00Z"></time>
+      </div>
+    </div>
+  `
+  const parsedMsgs = tgMod.parseTelegramChannelMessages(mockHtml)
+  assert.strictEqual(parsedMsgs.length, 1, 'Telegram 消息解析数量错误')
+  assert.strictEqual(parsedMsgs[0].msgId, '101', '消息 ID 提取失败')
+  assert.strictEqual(parsedMsgs[0].pwdId, 'abcd9988', '网盘 pwdId 提取失败')
+  assert.strictEqual(parsedMsgs[0].passcode, '7788', '提取码解析错误')
+  assert(parsedMsgs[0].title.includes('庆余年'), '影视剧名提取错误')
+  console.log('✓ Telegram HTML 消息 DOM 解析与网盘链接抽取验证通过')
+
+  console.log('\n--- 验证 39: 两段式真伪自我校验 (三路断言：死链过滤、无视频淘汰与有效剧集通过) ---')
+  // 1) 死链测试
+  const valRes1 = await tgMod.validateShareEntry({ pwdId: 'invalid_404_test' }, {
+    stubProbe: async () => ({ ok: false, error: 'ERR_41006' })
+  })
+  assert.strictEqual(valRes1.valid, false, '死链未被判定为无效')
+  assert.strictEqual(valRes1.reason, 'INVALID_TOKEN')
+
+  // 2) 无视频广告包淘汰测试
+  const valRes2 = await tgMod.validateShareEntry({ pwdId: 'test_no_vid' }, {
+    stubProbe: async () => ({
+      ok: true,
+      tokenRes: { ok: true, stoken: 'tok123' },
+      filesRes: { ok: true, files: [{ name: '宣传引流.txt', isVideo: false }] }
+    })
+  })
+  assert.strictEqual(valRes2.valid, false, '无视频文件的广告包未被淘汰')
+  assert.strictEqual(valRes2.reason, 'NO_VIDEO')
+
+  // 3) 正规高清剧集正向测试
+  const valRes3 = await tgMod.validateShareEntry({ pwdId: 'test_legit_4k' }, {
+    stubProbe: async () => ({
+      ok: true,
+      tokenRes: { ok: true, stoken: 'tok123', title: '庆余年2 4K' },
+      filesRes: { ok: true, files: [{ name: '第01集.4K.mp4', isVideo: true, epName: '第01集', size: 1048576 }] }
+    })
+  })
+  assert.strictEqual(valRes3.valid, true, '真实有效高清剧集未能通过校验')
+  assert.strictEqual(valRes3.files.length, 1)
+  console.log('✓ 两段式真伪自我校验 (三路断言闭环) 验证通过')
+
+  console.log('\n--- 验证 40: 聚合 W3C RSS 2.0 规范结构与全标签断言 ---')
+  const xml = tgMod.exportAggregatedRssFeed([
+    { title: '剧目A', link: 'https://pan.quark.cn/s/a1', files: [{ name: '第1集.mp4', epName: '第01集', size: 1024 }] },
+    { title: '剧目B', link: 'https://pan.quark.cn/s/b2', files: [{ name: '第1集.mp4', epName: '第01集', size: 2048 }] }
+  ], '影悦 24h 自动化网盘高清片源')
+  assert(xml.includes('<rss version="2.0">'), '必须包含标准 RSS 2.0 根标签')
+  assert(xml.includes('<channel>') && xml.includes('</channel>'), '必须包含 channel 规范标签')
+  assert(xml.includes('<item>') && xml.includes('</item>'), '必须包含 item 规范标签')
+  assert(xml.includes('<enclosure') && xml.includes('type="video/mp4"'), '必须包含 enclosure 流媒体播放标记')
+  assert(xml.includes('<lastBuildDate>'), '必须包含 lastBuildDate 时间戳')
+  assert(xml.includes('剧目A') && xml.includes('剧目B'), '必须包含所有聚合剧目名称')
+  console.log('✓ 聚合 W3C RSS 2.0 规范结构与全标签断言验证通过')
+
+  console.log('\n--- 验证 41: 超时熔断参数与并发限制门禁 ---')
+  assert.strictEqual(tgMod.TIMEOUT_MS, 3000, '超时熔断保护必须锁定 3000ms')
+  assert.strictEqual(tgMod.MAX_CONCURRENCY, 5, '批量自检并发限制必须锁定 <= 5')
+  console.log('✓ 超时熔断参数与并发限制门禁验证通过')
+
+  console.log('\n--- 验证 42: 定时器生命周期真实激活与销毁断言 ---')
+  tgMod.startDailyCrawler(60000, () => {})
+  assert.strictEqual(tgMod.hasActiveCrawler(), true, '启动巡检定时器后 active 状态应为 true')
+  tgMod.stopDailyCrawler()
+  assert.strictEqual(tgMod.hasActiveCrawler(), false, '停止巡检定时器后 active 状态应为 false')
+  console.log('✓ 定时器生命周期真实激活与销毁断言验证通过')
+
+  console.log('\n>>> 全部 5 大核心痛点、网盘分享 24h RSS 追更与 Telegram 全自动抓取自检等 42 项技术指标均已 100% 自动化验证通过! <<<')
 })()

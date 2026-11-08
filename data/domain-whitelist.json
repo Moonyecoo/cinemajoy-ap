@@ -40,7 +40,9 @@
     "aomedia.org",
     "quark.cn",
     "drive.quark.cn",
-    "pan.quark.cn"
+    "pan.quark.cn",
+    "t.me",
+    "telegram.org"
   ],
   "forbiddenDomains": [
     "huggingface.co",

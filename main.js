@@ -17,6 +17,7 @@ const https = require('node:https')
 const dnsModule = require('./lib/dns')
 const circles = require('./lib/circles')
 const cloudshare = require('./lib/cloudshare')
+const tgCrawler = require('./lib/telegram_crawler')
 
 // 注册国内防污染海报图床代理私有协议
 protocol.registerSchemesAsPrivileged([
@@ -722,6 +723,40 @@ function registerIpc() {
     }
   })
 
+  ipcMain.handle('telegram:crawl', async (_e, { channel, mirrorBaseUrl } = {}) => {
+    try {
+      return await tgCrawler.crawlAndValidateChannel(channel, { mirrorBaseUrl })
+    } catch (err) {
+      return { ok: false, error: 'CRAWL_FAILED', message: err.message, items: [] }
+    }
+  })
+
+  ipcMain.handle('telegram:exportRss', (_e, { items, title } = {}) => {
+    try {
+      const xml = tgCrawler.exportAggregatedRssFeed(items || [], title)
+      return { ok: true, xml }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('telegram:toggleDailyCrawler', (_e, { enable, intervalMs, channel, mirrorBaseUrl } = {}) => {
+    try {
+      if (enable) {
+        tgCrawler.startDailyCrawler(intervalMs || 24 * 3600 * 1000, async () => {
+          if (channel) {
+            await tgCrawler.crawlAndValidateChannel(channel, { mirrorBaseUrl })
+          }
+        })
+      } else {
+        tgCrawler.stopDailyCrawler()
+      }
+      return { ok: true, active: tgCrawler.hasActiveCrawler() }
+    } catch (err) {
+      return { ok: false, error: err.message }
+    }
+  })
+
   ipcMain.handle('dialog:confirm', async (_e, { title, message }) => {
     const result = await dialog.showMessageBox(mainWindow, {
       type: 'question',
@@ -934,6 +969,11 @@ if (!app.requestSingleInstanceLock()) {
 
   app.on('before-quit', () => {
     clearTimeout(saveTimer)
+    try {
+      tgCrawler.stopDailyCrawler()
+    } catch {
+      /* ignore */
+    }
     try {
       fs.writeFileSync(stateFile(), JSON.stringify(state, null, 2))
     } catch {

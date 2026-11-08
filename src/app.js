@@ -7192,6 +7192,8 @@ async function renderSettings() {
   setWindowTitle('源管理')
   state.sources = await shellApi.sources.list()
   const webdavCfg = LS.get('kky.webdav', { url: '', port: '', path: '/', user: '', pass: '' })
+  const tgCfg = LS.get('kky.tg_crawler', { channel: 'alyp_4K_remux', mirrorBaseUrl: 'https://t.me/s/', autoDaily: true })
+  const tgStats = LS.get('kky.tg_stats', { total: 0, valid: 0, invalid: 0, updatedAt: 0, items: [] })
 
   view.innerHTML = `
     <h1 class="page-title">源管理</h1>
@@ -7279,6 +7281,49 @@ async function renderSettings() {
         <button class="btn primary" id="btnParseCloudShare">一键解析订阅</button>
       </div>
       <div class="cloud-share-list" id="cloudShareList"></div>
+    </div>
+
+    <div class="panel tg-crawler-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <h3 style="margin:0">Telegram 网盘分享 24h 自动巡检与 RSS 高清源</h3>
+        <span class="badge-speed fast" style="font-size:11px">两段式真伪自检 · 0死链</span>
+      </div>
+      <p class="hint">
+        自动从公开分享频道抓取最新 4K / 原画网盘资源，对每一条链接进行 Token 与视频文件树两段式深度真伪探针，自动下钻探测子目录并剔除 404 死链与无视频广告，每日自动巡检更新并汇聚为全量 W3C RSS 2.0 订阅源。
+      </p>
+      <div class="field" style="margin-bottom:8px">
+        <input id="tgChannelInput" placeholder="频道标识，例如：alyp_4K_remux 或完整频道地址" style="flex:2" value="${esc(tgCfg.channel || 'alyp_4K_remux')}" />
+        <input id="tgMirrorInput" placeholder="镜像端点 (选填)，默认 https://t.me/s/" style="flex:2" value="${esc(tgCfg.mirrorBaseUrl || 'https://t.me/s/')}" />
+      </div>
+      <div class="field" style="margin-bottom:8px">
+        <button class="btn primary" id="btnCrawlTelegram">⚡ 立即全量抓取与健康检测</button>
+        <button class="btn" id="btnExportTgRss">复制全量 RSS 订阅</button>
+        <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.7);cursor:pointer;margin-left:auto">
+          <input type="checkbox" id="chkAutoTgDaily" ${tgCfg.autoDaily ? 'checked' : ''} style="cursor:pointer" />
+          开启 24 小时后台自动巡检
+        </label>
+      </div>
+
+      <div class="tg-stats-grid">
+        <div class="tg-stat-box">
+          <div class="tg-stat-label">总抓取候选</div>
+          <div class="tg-stat-val" id="tgStatTotal">${tgStats.total || 0}</div>
+        </div>
+        <div class="tg-stat-box">
+          <div class="tg-stat-label">真实有效原画</div>
+          <div class="tg-stat-val green" id="tgStatValid">${tgStats.valid || 0}</div>
+        </div>
+        <div class="tg-stat-box">
+          <div class="tg-stat-label">失效淘汰拦截</div>
+          <div class="tg-stat-val red" id="tgStatInvalid">${tgStats.invalid || 0}</div>
+        </div>
+        <div class="tg-stat-box">
+          <div class="tg-stat-label">上次自检更新</div>
+          <div class="tg-stat-val" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7)" id="tgStatTime">${tgStats.updatedAt ? new Date(tgStats.updatedAt).toLocaleTimeString() : '从未'}</div>
+        </div>
+      </div>
+
+      <div class="tg-feed-list" id="tgFeedList"></div>
     </div>
 
     <div class="panel">
@@ -7668,6 +7713,136 @@ async function renderSettings() {
         btnParseShare.disabled = false
         btnParseShare.textContent = '一键解析订阅'
       }
+    }
+  }
+
+  const renderTgFeedItems = () => {
+    const feedEl = document.getElementById('tgFeedList')
+    if (!feedEl) return
+    const currentStats = LS.get('kky.tg_stats', { items: [] })
+    const items = currentStats.items || []
+    if (items.length === 0) {
+      feedEl.innerHTML = '<div class="hint" style="text-align:center;padding:10px 0">暂无抓取记录，点击上方按钮立即执行抓取自检</div>'
+      return
+    }
+    feedEl.innerHTML = items
+      .slice(0, 30)
+      .map((it, idx) => {
+        const epCount = Array.isArray(it.files) ? it.files.length : 0
+        return `
+        <div class="cloud-share-item">
+          <div class="cloud-share-meta">
+            <div class="cloud-share-title">${esc(it.title || '网盘高清影视')} <span style="font-size:11px;color:#4ade80;font-weight:normal">(已通过自检 · ${epCount} 集)</span></div>
+            <div class="cloud-share-subtitle">${esc(it.shareUrl || '')} · 抓取于 ${it.datetime ? new Date(it.datetime).toLocaleDateString() : '最新'}</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn small" data-tg-copy="${idx}">复制分享</button>
+          </div>
+        </div>
+      `
+      })
+      .join('')
+
+    feedEl.querySelectorAll('[data-tg-copy]').forEach((btn) => {
+      btn.onclick = async () => {
+        const idx = parseInt(btn.dataset.tgCopy, 10)
+        const it = items[idx]
+        if (!it) return
+        const text = `${it.title} ${it.shareUrl}${it.passcode ? ' 提取码: ' + it.passcode : ''}`
+        await shellApi.media.copy(text)
+        toast('✦ 网盘分享信息已复制到剪贴板')
+      }
+    })
+  }
+
+  renderTgFeedItems()
+
+  const btnCrawl = document.getElementById('btnCrawlTelegram')
+  if (btnCrawl) {
+    btnCrawl.onclick = async () => {
+      const chInput = document.getElementById('tgChannelInput')
+      const mirrorInput = document.getElementById('tgMirrorInput')
+      const channel = chInput?.value.trim() || 'alyp_4K_remux'
+      const mirrorBaseUrl = mirrorInput?.value.trim() || 'https://t.me/s/'
+
+      btnCrawl.disabled = true
+      btnCrawl.textContent = '抓取与两段式自检中…'
+      try {
+        const res = await shellApi.telegram.crawl({ channel, mirrorBaseUrl })
+        if (res && res.ok) {
+          const stats = {
+            total: res.totalParsed,
+            valid: res.validCount,
+            invalid: res.invalidCount,
+            updatedAt: Date.now(),
+            items: res.items || [],
+          }
+          LS.set('kky.tg_stats', stats)
+          LS.set('kky.tg_crawler', {
+            channel,
+            mirrorBaseUrl,
+            autoDaily: document.getElementById('chkAutoTgDaily')?.checked ?? true,
+          })
+
+          const statTotalEl = document.getElementById('tgStatTotal')
+          const statValidEl = document.getElementById('tgStatValid')
+          const statInvalidEl = document.getElementById('tgStatInvalid')
+          const statTimeEl = document.getElementById('tgStatTime')
+          if (statTotalEl) statTotalEl.textContent = stats.total
+          if (statValidEl) statValidEl.textContent = stats.valid
+          if (statInvalidEl) statInvalidEl.textContent = stats.invalid
+          if (statTimeEl) statTimeEl.textContent = new Date().toLocaleTimeString()
+
+          renderTgFeedItems()
+          toast(`✦ 抓取自检完成：发现 ${res.validCount} 部真实有效原画片源，自动过滤淘汰 ${res.invalidCount} 个死链`)
+        } else {
+          toast('抓取失败：' + (res?.message || res?.error || '网络超时或目标频道不可达'))
+        }
+      } catch (err) {
+        toast('抓取失败：' + (err.message || err))
+      } finally {
+        btnCrawl.disabled = false
+        btnCrawl.textContent = '⚡ 立即全量抓取与健康检测'
+      }
+    }
+  }
+
+  const btnExportTg = document.getElementById('btnExportTgRss')
+  if (btnExportTg) {
+    btnExportTg.onclick = async () => {
+      const stats = LS.get('kky.tg_stats', { items: [] })
+      if (!stats.items || stats.items.length === 0) {
+        return toast('当前暂无已校验有效的高清片源，请先执行抓取自检')
+      }
+      try {
+        const res = await shellApi.telegram.exportRss({
+          items: stats.items,
+          title: '影悦 24h 自动化网盘高清片源',
+        })
+        if (res && res.ok && res.xml) {
+          await shellApi.media.copy(res.xml)
+          toast('✦ W3C 标准全量 RSS 2.0 订阅已复制到剪贴板')
+        } else {
+          toast('导出 RSS 失败：' + (res?.error || '未知错误'))
+        }
+      } catch (e) {
+        toast('导出异常：' + (e.message || e))
+      }
+    }
+  }
+
+  const chkDaily = document.getElementById('chkAutoTgDaily')
+  if (chkDaily) {
+    chkDaily.onchange = async () => {
+      const channel = document.getElementById('tgChannelInput')?.value.trim() || 'alyp_4K_remux'
+      const mirrorBaseUrl = document.getElementById('tgMirrorInput')?.value.trim() || 'https://t.me/s/'
+      LS.set('kky.tg_crawler', { channel, mirrorBaseUrl, autoDaily: chkDaily.checked })
+      await shellApi.telegram.toggleDailyCrawler({
+        enable: chkDaily.checked,
+        channel,
+        mirrorBaseUrl,
+      })
+      toast(chkDaily.checked ? '已开启 24 小时后台自动巡检' : '已关闭后台巡检')
     }
   }
 
