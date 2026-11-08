@@ -1,0 +1,4 @@
+interface:
+  display_name: "Value Props Pain Points"
+  short_description: "Map value propositions to customer pain"
+  default_prompt: "Use $value-props-pain-points to map this product's value propositions to customer pain points."
